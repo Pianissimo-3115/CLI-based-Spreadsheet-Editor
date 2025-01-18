@@ -5,7 +5,9 @@
 #define windowWidth 10
 #define windowHeight 10
 
-enum inputType {Invalid, Movement, Const, Expression};
+enum inputType {Invalid, Movement, Assignment};
+enum ops { ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, SLEEP, FIX};
+enum bool { true = 1, false = 0};
 
 struct addr /*  Not Done/Temp  */
 {
@@ -21,14 +23,14 @@ struct cell /*  Not Done/Temp  */
 
 // emptycell = (struct cell) {0,0};
 
-static void mainloop(int* data, int R, int C) /*  Not Done/Temp  */
+void mainloop(int* data, int R, int C) /*  Not Done/Temp  */
 {
     char cmd[50];
     scanf("%s", cmd);
 
 }
 
-static int row_int_from_chars(char* chars)
+int row_int_from_chars(char* chars)
 {
     int out = 0;
     for (int i = 0; i < 3; i++)
@@ -41,7 +43,7 @@ static int row_int_from_chars(char* chars)
     return out;
 }
 
-static int col_int_from_chars(char* chars)
+int col_int_from_chars(char* chars)
 {
     int out = 0;
     for (int i = 0; i < 3; i++)
@@ -54,7 +56,7 @@ static int col_int_from_chars(char* chars)
     return out;
 }
 
-static void col_chars_from_int(int col, char* out)
+void col_chars_from_int(int col, char* out)
 {
     if (col <= 26)
     {
@@ -80,27 +82,111 @@ static void col_chars_from_int(int col, char* out)
     //Wrong input
 }
 
-
-static void parse_input(char* inp, enum inputType* inpType_out) /*  Not Done/Temp  */
+struct parsedInput
 {
-    char targetCol[3];
-    char targetRow[3];
-    if ( *inp == 'w' )
-    {
-        
-    }
-    else if ( *inp == 'a' )
-    {
-        
-    }
-    else if ( *inp == 's' )
-    {
-        
-    }
-    else if ( *inp == 'd' )
-    {
+    enum inputType inpType;
 
+    enum ops operation;
+
+    enum bool val1Type;
+    char val1Addr[6];
+    int val1Int;
+
+    enum bool val2Type;
+    char val2Addr[6];
+    int val2Int;
+
+    char target[6];
+
+};
+
+void parse_input(char* inp, struct parsedInput* parsed_out) /*  Not Done/Temp  */
+{
+
+
+    if ( inp[1] == '\0' ) //Input has only one character
+    {
+        if ( inp[0] == 'w' )
+        {
+            (*parsed_out).inpType = Movement;
+            (*parsed_out).val1Int = 0;
+        }
+        else if ( inp[0] == 'a' )
+        {
+            (*parsed_out).inpType = Movement;
+            (*parsed_out).val1Int = 1;
+        }
+        else if ( inp[0] == 's' )
+        {
+            (*parsed_out).inpType = Movement;
+            (*parsed_out).val1Int = 2;
+        }
+        else if ( inp[0] == 'd' )
+        {
+            (*parsed_out).inpType = Movement;
+            (*parsed_out).val1Int = 3;
+        }
+        else
+        {
+            (*parsed_out).inpType = Invalid;
+            (*parsed_out).val1Int = 0; //Invalid syntax
+        }
+        return;
+        
     }
+    else if ( 'Z' >= inp[0] && 'A' <= inp[0])
+    {
+        char* currCharPtr = inp;
+        char targetColChar[3] = inp[0];
+        int targetCol;
+        int targetRow;
+        int i = 1;
+        while (i < 3)
+        {
+            if ('Z' >= inp[i] && 'A' <= inp[i])
+            {
+                targetColChar[i] = inp[i];
+            }
+            else if ('9' >= inp[i] && '0' <= inp[i])
+            {
+                break;
+            }
+            else
+            {
+                (*parsed_out).inpType = Invalid;
+                (*parsed_out).val1Int = 0; //Invalid syntax
+            }
+        }
+        targetRow = inp[i] - '0' + 1;
+        int j = 1;
+        while (j < 3)
+        {
+
+            if ('9' >= inp[i+j] && '0' <= inp[i+j])
+            {
+                targetRow = 10*targetRow + (inp[i+j] - '0' + 1);
+            }
+            else if (inp[i+j] == '=')
+            {
+                j--;
+                break;
+            }
+            else
+            {
+                (*parsed_out).inpType = Invalid;
+                (*parsed_out).val1Int = 0; //Invalid syntax
+            }
+        }
+        //TODO From here
+
+        
+    }
+    else
+    {
+            (*parsed_out).inpType = Invalid;
+            (*parsed_out).val1Int = 0; //Invalid syntax
+    }
+    
 
     // while (1)
     // {
@@ -113,7 +199,7 @@ static void parse_input(char* inp, enum inputType* inpType_out) /*  Not Done/Tem
 }
 
 
-static int display_window(dtype** data, int currR, int currC, int R, int C)
+int display_window(dtype** data, int currR, int currC, int R, int C)
 {
 
     char colChars[3];
@@ -177,7 +263,6 @@ int main()
     scanf("%u %u", &R, &C);
     
     dtype** data = calloc(R*C, sizeof(dtype*));
-    dtype** dataptr = data;
 
     display_window(data, 23, 23, R, C);
     
