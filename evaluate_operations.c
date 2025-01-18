@@ -3,23 +3,15 @@
 #include <unistd.h>
 #include <limits.h>
 #include <math.h>
+#include "cell_operations.h"
 
-typedef enum { FIX, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, SLEEP} ops;
+int max(int a, int b){
+    return (( a > b )? a : b);
+}
 
-typedef struct {
-    int col_name;
-    int row_num;
-    int value; 
-    int valid; 
-    Cell_func *func;    
-} Cell;
-
-typedef struct {
-    Cell* Cell1;
-    Cell* Cell2;
-    ops op;
-    int fix_val;
-} Cell_func;
+int min(int a, int b){
+    return (( a < b )? a : b);
+}
 
 int min_eval(Cell** data, Cell_func* func, int R, int C){
     Cell* cell1 = func->Cell1;
@@ -121,9 +113,10 @@ void evaluate(Cell** data, Cell *cell, int R ,int C) {
     }
     return;
 }
+
 int main(){
     unsigned int R, C;
     scanf("%u %u", &R, &C);
-    Cell** data = calloc(R*C, sizeof(Cell*));
-    display_window(data, 23, 23, R, C);    
+    // Cell** data = calloc(R*C, sizeof(Cell*));
+    // display_window(data, 23, 23, R, C);    
 }

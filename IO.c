@@ -1,25 +1,25 @@
 #include<stdio.h>
+#include<stdlib.h>
+#include "cell_operations.h"
+#include<stdbool.h>
 // #include<string.h>
 
-#define dtype struct cell
-#define windowWidth 10
-#define windowHeight 10
+// #define dtype struct cell
+typedef enum {Invalid, Movement, Assignment} inputType;
 
-enum inputType {Invalid, Movement, Assignment};
-enum ops { ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, SLEEP, FIX};
-enum bool { true = 1, false = 0};
+// bool { true = 1, false = 0};
 
-struct addr /*  Not Done/Temp  */
-{
-    int col;
-    int row;
-};
+// struct addr /*  Not Done/Temp  */
+// {
+//     int col;
+//     int row;
+// };
 
-struct cell /*  Not Done/Temp  */
-{
-    struct addr address;
-    int val;
-};
+// struct cell /*  Not Done/Temp  */
+// {
+//     struct addr address;
+//     int val;
+// };
 
 // emptycell = (struct cell) {0,0};
 
@@ -37,7 +37,7 @@ int row_int_from_chars(char* chars)
     {
         if (*(chars+i) != '\0')
         {
-            out = out*10 + *(chars+i)-'0'+1;
+            out = out*10 + *(chars+i)-'0';
         }
     }
     return out;
@@ -84,15 +84,15 @@ void col_chars_from_int(int col, char* out)
 
 struct parsedInput
 {
-    enum inputType inpType;
+    inputType inpType;
 
-    enum ops operation;
+    ops operation;
 
-    enum bool val1Type;
+    bool val1Type;
     char val1Addr[6];
     int val1Int;
 
-    enum bool val2Type;
+    bool val2Type;
     char val2Addr[6];
     int val2Int;
 
@@ -137,7 +137,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out) /*  Not Done/Temp  *
     else if ( 'Z' >= inp[0] && 'A' <= inp[0])
     {
         char* currCharPtr = inp;
-        char targetColChar[3] = inp[0];
+        char targetColChar[3] = inp[0];         // THIS CAUSES AN ERROR AND COULD NOT DEBUG CAUSE NOT SURE WHAT IT IS SUPPOSED TO DO
         int targetCol;
         int targetRow;
         int i = 1;
@@ -199,7 +199,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out) /*  Not Done/Temp  *
 }
 
 
-int display_window(dtype** data, int currR, int currC, int R, int C)
+int display_window(Cell** data, int currR, int currC, int R, int C)
 {
 
     char colChars[3];
@@ -212,7 +212,7 @@ int display_window(dtype** data, int currR, int currC, int R, int C)
     }
     printf("\n");
 
-    dtype** runningPtr = data;
+    Cell** runningPtr = data;
     for (int i = currR; i < currR + windowHeight && i <= R; i++)
     {
         printf("%10d", i);
@@ -224,7 +224,7 @@ int display_window(dtype** data, int currR, int currC, int R, int C)
             }
             else
             {
-                printf("%10d", (**(data + C*i + j - 1)).val);
+                printf("%10d", (**(data + C*i + j - 1)).value);
             }
         }
         printf("\n");
@@ -262,7 +262,7 @@ int main()
     unsigned int R, C;
     scanf("%u %u", &R, &C);
     
-    dtype** data = calloc(R*C, sizeof(dtype*));
+    Cell** data = calloc(R*C, sizeof(Cell*));
 
     display_window(data, 23, 23, R, C);
     
