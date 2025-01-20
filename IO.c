@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include<stdlib.h>
+#include"stdlib.h"
 #include "cell_operations.h"
 #include<stdbool.h>
 // #include<string.h>
@@ -191,6 +191,14 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             }
         }
 
+        if (!('9' >= inp[i] && '0' <= inp[i]))
+        {
+            (*parsed_out).inpType = Invalid;
+            (*parsed_out).val1Int = 0; //Invalid syntax
+            return;
+        }
+        
+
         //Parse target row
         targetRow = inp[i] - '0';
         int j = 1;
@@ -320,6 +328,13 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                 }
             }
 
+            if (!('9' >= inp[rangeStart + i] && '0' <= inp[rangeStart + i]))
+            {
+                (*parsed_out).inpType = Invalid;
+                (*parsed_out).val1Int = 0; //Invalid syntax
+                return;
+            }
+
             val1Row = inp[rangeStart + i] - '0';
             int j = 1;
             while (j < 3)
@@ -386,6 +401,13 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                     (*parsed_out).val1Int = 0; //Invalid syntax
                     return;
                 }
+            }
+
+            if (!('9' >= inp[rangeEnd+i] && '0' <= inp[rangeEnd+i]))
+            {
+                (*parsed_out).inpType = Invalid;
+                (*parsed_out).val1Int = 0; //Invalid syntax
+                return;
             }
 
             val2Row = inp[rangeEnd + i] - '0';
@@ -537,29 +559,80 @@ int main()
 
     // display_window(data, 23, 23, R, C);
 
-    int R = 50;
-    int C = 50;
+    int R = 2000000;
+    int C = 200000;
     char inp[30];
 
     scanf("%s", inp);
     struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
     parse_input(inp, &parse, R, C);
 
-    printf("%i\n", parse.inpType);
+    switch (parse.inpType)
+    {
+    case 0:
+        printf("Invalid\n");
+        break;
+    case 1:
+        printf("Movement\n");
+        break;
+    case 2:
+        printf("Assignment\n");
+        break;
+    default:
+        break;
+    }
+    // printf("%i\n", parse.inpType);
 
-    printf("%i\n", parse.operation);
+    switch (parse.operation)
+    {
+    case 0:
+        printf("FIX\n");
+        break;
+    case 1:
+        printf("ADD\n");
+        break;
+    case 2:
+        printf("SUB\n");
+        break;
+    case 3:
+        printf("MUL\n");
+        break;
+    case 4:
+        printf("DIV\n");
+        break;  
+    case 5:
+        printf("MIN\n");
+        break;
+    case 6:
+        printf("MAX\n");
+        break;
+    case 7:
+        printf("STDEV\n");
+        break;
+    case 8:
+        printf("SUM\n");
+        break;
+    case 9:
+        printf("AVG\n");
+        break;
+    case 10:
+        printf("SLEEP\n");
+        break;
+    default:
+        break;
+    }
 
-    printf("%i\n", parse.val1Type);
-    printf("%i\n", parse.val1Col);
-    printf("%i\n", parse.val1Row);
-    printf("%i\n", parse.val1Int);
+    printf("val1Type %i\n", parse.val1Type);
+    printf("val1Col %i\n", parse.val1Col);
+    printf("val1Row %i\n", parse.val1Row);
+    printf("val1Int %i\n", parse.val1Int);
+ //
+    printf("val2Type %i\n", parse.val2Type);
+    printf("val2Col %i\n", parse.val2Col);
+    printf("val2Row %i\n", parse.val2Row);
+    printf("val2Int %i\n", parse.val2Int);
 
-    printf("%i\n", parse.val2Type);
-    printf("%i\n", parse.val2Col);
-    printf("%i\n", parse.val2Row);
-    printf("%i\n", parse.val2Int);
-
-    printf("%i\n", parse.targetCol);
-    printf("%i\n", parse.targetRow);
+    printf("targetCol %i\n", parse.targetCol);
+    printf("targetRow %i\n", parse.targetRow);
     
 }
