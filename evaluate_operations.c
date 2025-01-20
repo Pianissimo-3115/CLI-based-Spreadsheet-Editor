@@ -4,14 +4,8 @@
 #include <limits.h>
 #include <math.h>
 #include "cell_operations.h"
-
-int max(int a, int b){
-    return (( a > b )? a : b);
-}
-
-int min(int a, int b){
-    return (( a < b )? a : b);
-}
+#define max(A, B) ((A) > (B) ? (A) : (B))
+#define min(A, B) ((A) < (B) ? (A) : (B))
 
 int min_eval(Cell** data, Cell_func* func, int R, int C){
     Cell* cell1 = func->Cell1;
