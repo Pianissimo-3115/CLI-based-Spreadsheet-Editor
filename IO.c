@@ -135,28 +135,33 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
         printf("Only has one character.\n");
         if ( inp[0] == 'w' )
         {
-            (*parsed_out).inpType = Movement;
-            (*parsed_out).val1Int = 0;
+            parsed_out -> inpType = Movement;
+            parsed_out -> val1Int = 0;
         }
         else if ( inp[0] == 'a' )
         {
-            (*parsed_out).inpType = Movement;
-            (*parsed_out).val1Int = 1;
+            parsed_out -> inpType = Movement;
+            parsed_out -> val1Int = 1;
         }
         else if ( inp[0] == 's' )
         {
-            (*parsed_out).inpType = Movement;
-            (*parsed_out).val1Int = 2;
+            parsed_out -> inpType = Movement;
+            parsed_out -> val1Int = 2;
         }
         else if ( inp[0] == 'd' )
         {
-            (*parsed_out).inpType = Movement;
-            (*parsed_out).val1Int = 3;
+            parsed_out -> inpType = Movement;
+            parsed_out -> val1Int = 3;
+        }
+        else if ( inp[0] == 'q' ) //Quit
+        {
+            parsed_out -> inpType = Movement;
+            parsed_out -> val1Int = 4;
         }
         else
         {
-            (*parsed_out).inpType = Invalid;
-            (*parsed_out).val1Int = 0; //Invalid syntax
+            parsed_out -> inpType = Invalid;
+            parsed_out -> val1Int = 0; //Invalid syntax
         }
         return;
         
@@ -185,16 +190,16 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             }
             else
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 0; //Invalid syntax
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
         }
 
         if (!('9' >= inp[i] && '0' <= inp[i]))
         {
-            (*parsed_out).inpType = Invalid;
-            (*parsed_out).val1Int = 0; //Invalid syntax
+            parsed_out -> inpType = Invalid;
+            parsed_out -> val1Int = 0; //Invalid syntax
             return;
         }
         
@@ -216,23 +221,24 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             }
             else
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 0; //Invalid syntax
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
         }
 
         if (inp[i+j] != '=') //Must be followed by an assignment operator
         {
-            (*parsed_out).inpType = Invalid;
-            (*parsed_out).val1Int = 0; //Invalid syntax
+            parsed_out -> inpType = Invalid;
+            parsed_out -> val1Int = 0; //Invalid syntax
             return;
         }
 
-        if (targetCol > C || targetRow > R) //Must be in range
+
+        if (targetCol > C || targetRow > R || targetRow <= 0) //Must be in range
         {
-            (*parsed_out).inpType = Invalid;
-            (*parsed_out).val1Int = 1; //Address out of range
+            parsed_out -> inpType = Invalid;
+            parsed_out -> val1Int = 1; //Address out of range
             return;
         }
 
@@ -289,12 +295,39 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             rangeStart = exprStart + 6;
 
         }
-        else if (check_chars_equal(inp + exprStart, checkSLEEP, 6))
+        else if (check_chars_equal(inp + exprStart, checkSLEEP, 6)) //Sleep does not take a range so has different logic
         {
-            isFunc = true;
+            // isFunc = true;
             parsed_out -> operation = SLEEP;
             rangeStart = exprStart + 6;
 
+            if (!('9' >= inp[rangeStart] && '0' <= inp[rangeStart]))
+            {
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
+                return;
+            }
+
+            int val1Int = 0;
+            i = 0;
+            while ('9' >= inp[rangeStart+i] && '0' <= inp[rangeStart+i])
+            {
+                val1Int = val1Int*10 + inp[rangeStart+i] - '0';
+                i++;
+            }
+
+            if (inp[rangeStart + i] != ')' || inp[rangeStart + i + 1] != '\0')
+            {
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
+                return;
+            }
+
+            parsed_out -> inpType = Assignment;
+            parsed_out -> val1Type = 0; 
+            parsed_out -> val1Int = val1Int;
+            return;
+            
         }
 
         if (isFunc) //It is a function => Parse Range
@@ -314,24 +347,24 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                 {
                     if (i == 0)
                     {
-                        (*parsed_out).inpType = Invalid;
-                        (*parsed_out).val1Int = 0; //Invalid syntax
+                        parsed_out -> inpType = Invalid;
+                        parsed_out -> val1Int = 0; //Invalid syntax
                         return;
                     }
                     break;
                 }
                 else
                 {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val1Int = 0; //Invalid syntax
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
                     return;
                 }
             }
 
             if (!('9' >= inp[rangeStart + i] && '0' <= inp[rangeStart + i]))
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 0; //Invalid syntax
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
 
@@ -351,8 +384,8 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                 }
                 else
                 {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val1Int = 0; //Invalid syntax
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
                     return;
                 }
             }
@@ -360,15 +393,15 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
 
             if (inp[rangeStart + i+j] != ':')
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 0; //Invalid syntax
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
 
-            if (val1Col > C || val1Row > R)
+            if (val1Col > C || val1Row > R || val1Row <= 0)
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 1; //Address out of range
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 1; //Address out of range
                 return;
             }
 
@@ -389,24 +422,24 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                 {
                     if (i == 0)
                     {
-                        (*parsed_out).inpType = Invalid;
-                        (*parsed_out).val1Int = 0; //Invalid syntax
+                        parsed_out -> inpType = Invalid;
+                        parsed_out -> val1Int = 0; //Invalid syntax
                         return;
                     }
                     break;
                 }
                 else
                 {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val1Int = 0; //Invalid syntax
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
                     return;
                 }
             }
 
             if (!('9' >= inp[rangeEnd+i] && '0' <= inp[rangeEnd+i]))
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 0; //Invalid syntax
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
 
@@ -426,8 +459,8 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                 }
                 else
                 {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val1Int = 0; //Invalid syntax
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
                     return;
                 }
 
@@ -436,22 +469,22 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
 
             if (inp[rangeEnd + i+j] != ')')
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 0; //Invalid syntax
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
 
-            if (val2Col > C || val2Row > R)
+            if (val2Col > C || val2Row > R || val2Row <= 0)
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 1; //Address out of range
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 1; //Address out of range
                 return;
             }
 
             if (val1Col > val2Col || val1Row > val2Row)
             {
-                (*parsed_out).inpType = Invalid;
-                (*parsed_out).val1Int = 2; //Range is opposite;
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 2; //Range is opposite;
                 return;
             }
 
@@ -470,6 +503,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             {
                 int val1Int = 0;
                 i = 0;
+                j = 0;
                 while ('9' >= inp[exprStart+i] && '0' <= inp[exprStart+i])
                 {
                     val1Int = val1Int*10 + inp[exprStart+i] - '0';
@@ -492,8 +526,8 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
 
                 if (!('9' >= inp[exprStart+i] && '0' <= inp[exprStart+i])) //Column letters must be followed by a number
                 {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val1Int = 0; //Invalid syntax
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
                     return;                    
                 }
 
@@ -506,10 +540,10 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                     j++;
                 }
 
-                if (val1Col > C || val1Row > R) //Must be within bounds
+                if (val1Col > C || val1Row > R || val1Row <= 0) //Must be within bounds
                 {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val1Int = 1; //Address out of range
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 1; //Address out of range
                     return;
                 }
                 
@@ -518,7 +552,13 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                 parsed_out -> val1Row = val1Row;
                 
             }
-
+            else //It was an assignment but followup was not correct
+            {
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
+                return;
+            }
+            
             if (inp[exprStart + i + j] == '\0') //If it does not have anything else (thus direct assignment)
             {
                 parsed_out->inpType = Assignment;
@@ -549,8 +589,8 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             }
             else
             {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val1Int = 0; //Invalid syntax
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
                     return;      
             }
             
@@ -561,6 +601,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             {
                 int val2Int = 0;
                 i = 0;
+                j = 0;
                 while ('9' >= inp[exprSecond+i] && '0' <= inp[exprSecond+i])
                 {
                     val2Int = val2Int*10 + inp[exprSecond+i] - '0';
@@ -583,8 +624,8 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
 
                 if (!('9' >= inp[exprSecond+i] && '0' <= inp[exprSecond+i])) //Column letters must be followed by a number
                 {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val2Int = 0; //Invalid syntax
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
                     return;                    
                 }
 
@@ -597,10 +638,10 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                     j++;
                 }
 
-                if (val2Col > C || val2Row > R) //Must be within bounds
+                if (val2Col > C || val2Row > R || val2Row <= 0) //Must be within bounds
                 {
-                    (*parsed_out).inpType = Invalid;
-                    (*parsed_out).val2Int = 1; //Address out of range
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 1; //Address out of range
                     return;
                 }
                 
@@ -608,6 +649,13 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
                 parsed_out -> val2Col = val2Col;
                 parsed_out -> val2Row = val2Row;
                 
+            }
+
+            if (inp[exprSecond + i + j] != '\0')
+            {
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; // Wrong Syntax
+                    return;
             }
 
             return;
@@ -624,14 +672,6 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             return;
     }
     
-
-    // while (1)
-    // {
-    //     if ('Z' >= inp && inp >= 'A')
-    //     {
-    //         targetCol
-    //     }
-    // }
     
 }
 
@@ -705,12 +745,25 @@ int main()
 
     int R = 2000000;
     int C = 200000;
-    char inp[30];
+    char inp[30] = "";
 
-    scanf("%s", inp);
+
+    // scanf("%s %s", inp, inp2);
+    int i = 0;
+    int c;
+    while ((c = getchar()) != EOF && c != '\n' && i < 30)
+    {
+        inp[i] = c;
+        // printf("%c", c);
+        i++;
+
+    }
+    
+
+    
+    printf("%s\n", inp);
     struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
     parse_input(inp, &parse, R, C);
-
     switch (parse.inpType)
     {
     case 0:
