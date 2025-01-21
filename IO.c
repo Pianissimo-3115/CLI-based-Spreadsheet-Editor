@@ -466,10 +466,154 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
         }
         else //It is not a function => Must be number or address
         {
+            if ('9' >= inp[exprStart] && '0' <= inp[exprStart]) //val1 is an integer
+            {
+                int val1Int = 0;
+                i = 0;
+                while ('9' >= inp[exprStart+i] && '0' <= inp[exprStart+i])
+                {
+                    val1Int = val1Int*10 + inp[exprStart+i] - '0';
+                    i++;
+                }
+                parsed_out -> val1Type = 0; 
+                parsed_out -> val1Int = val1Int;
+            }
+            else if ('Z' >= inp[exprStart] && 'A' <= inp[exprStart]) //val1 is an address
+            {
+
+                //Get address column (max three characters)
+                i = 0;
+                int val1Col = 0;
+                while ('Z' >= inp[exprStart + i] && 'A' <= inp[exprStart + i] && i<3)
+                {
+                    val1Col = val1Col*26 + inp[exprStart + i] - 'A' + 1;
+                    i++;
+                }
+
+                if (!('9' >= inp[exprStart+i] && '0' <= inp[exprStart+i])) //Column letters must be followed by a number
+                {
+                    (*parsed_out).inpType = Invalid;
+                    (*parsed_out).val1Int = 0; //Invalid syntax
+                    return;                    
+                }
+
+                //Get address row (max three characters)
+                j = 0;
+                int val1Row = 0;
+                while ('9' >= inp[exprStart + i + j] && '0' <= inp[exprStart + i + j] && j<3)
+                {
+                    val1Row = val1Row*10 + inp[exprStart + i + j] - '0';
+                    j++;
+                }
+
+                if (val1Col > C || val1Row > R) //Must be within bounds
+                {
+                    (*parsed_out).inpType = Invalid;
+                    (*parsed_out).val1Int = 1; //Address out of range
+                    return;
+                }
+                
+                parsed_out -> val1Type = 1;
+                parsed_out -> val1Col = val1Col;
+                parsed_out -> val1Row = val1Row;
+                
+            }
+
+            if (inp[exprStart + i + j] == '\0') //If it does not have anything else (thus direct assignment)
+            {
+                parsed_out->inpType = Assignment;
+                parsed_out -> operation = FIX;
+
+                return;
+            }
             
+            else if (inp[exprStart + i + j] == '+')
+            {
+                parsed_out->inpType = Assignment;
+                parsed_out -> operation = ADD;
+            }
+            else if (inp[exprStart + i + j] == '-')
+            {
+                parsed_out->inpType = Assignment;
+                parsed_out -> operation = SUB;
+            }
+            else if (inp[exprStart + i + j] == '*')
+            {
+                parsed_out->inpType = Assignment;
+                parsed_out -> operation = MUL;
+            }
+            else if (inp[exprStart + i + j] == '/')
+            {
+                parsed_out->inpType = Assignment;
+                parsed_out -> operation = DIV;
+            }
+            else
+            {
+                    (*parsed_out).inpType = Invalid;
+                    (*parsed_out).val1Int = 0; //Invalid syntax
+                    return;      
+            }
+            
+            //Get val 2
+            int exprSecond = exprStart + i + j + 1;
+
+            if ('9' >= inp[exprSecond] && '0' <= inp[exprSecond]) //val2 is an integer
+            {
+                int val2Int = 0;
+                i = 0;
+                while ('9' >= inp[exprSecond+i] && '0' <= inp[exprSecond+i])
+                {
+                    val2Int = val2Int*10 + inp[exprSecond+i] - '0';
+                    i++;
+                }
+                parsed_out -> val2Type = 0; 
+                parsed_out -> val2Int = val2Int;
+            }
+            else if ('Z' >= inp[exprSecond] && 'A' <= inp[exprSecond]) //val2 is an address
+            {
+
+                //Get address column (max three characters)
+                i = 0;
+                int val2Col = 0;
+                while ('Z' >= inp[exprSecond + i] && 'A' <= inp[exprSecond + i] && i<3)
+                {
+                    val2Col = val2Col*26 + inp[exprSecond + i] - 'A' + 1;
+                    i++;
+                }
+
+                if (!('9' >= inp[exprSecond+i] && '0' <= inp[exprSecond+i])) //Column letters must be followed by a number
+                {
+                    (*parsed_out).inpType = Invalid;
+                    (*parsed_out).val2Int = 0; //Invalid syntax
+                    return;                    
+                }
+
+                //Get address row (max three characters)
+                j = 0;
+                int val2Row = 0;
+                while ('9' >= inp[exprSecond + i + j] && '0' <= inp[exprSecond + i + j] && j<3)
+                {
+                    val2Row = val2Row*10 + inp[exprSecond + i + j] - '0';
+                    j++;
+                }
+
+                if (val2Col > C || val2Row > R) //Must be within bounds
+                {
+                    (*parsed_out).inpType = Invalid;
+                    (*parsed_out).val2Int = 1; //Address out of range
+                    return;
+                }
+                
+                parsed_out -> val2Type = 1;
+                parsed_out -> val2Col = val2Col;
+                parsed_out -> val2Row = val2Row;
+                
+            }
+
+            return;
+
         }
 
-        
 
         
     }
