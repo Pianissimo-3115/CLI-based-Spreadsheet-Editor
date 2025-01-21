@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <time.h>
 #include <limits.h>
 #include <math.h>
 #include "cell_operations.h"
@@ -76,6 +76,10 @@ int stdev_eval(Cell** data, Cell_func* func, int R, int C){
         }        
     }
     return sqrt(sum_sq/count);
+}
+void sleep(int seconds) {
+    time_t start_time = time(NULL);
+    while ((time(NULL) - start_time) < seconds);
 }
 
 void evaluate(Cell** data, Cell *cell, int R ,int C) {
