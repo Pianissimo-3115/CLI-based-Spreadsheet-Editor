@@ -3,6 +3,7 @@
 
     #define windowWidth  10
     #define windowHeight 10
+    #include "data_structures.h"
     
     typedef enum ops { FIX, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, SLEEP} ops;
     typedef struct Cell_func Cell_func;
@@ -11,8 +12,11 @@
         int col_name;
         int row_num;
         int value; 
-        int valid; 
-        Cell_func *func;    
+        int valid;                      
+        Cell_func *func;
+        AVL* children;
+        int depth;
+        
     } Cell;
 
     struct Cell_func {
