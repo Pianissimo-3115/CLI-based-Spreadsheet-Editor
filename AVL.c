@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "data_structures.h"
+#include "cell_operations.h"
 #include <stdbool.h>
-bool custom_comparator(int element1, int element2){
-    return element1<element2;                           /////////////////////////////////////////////////// THIS HAS TO BE MODIFIED ACCORDING TO USE CASE (MOSTLY GOING TO BE USED AS "DEPTH" MEMBER OF THE STRUCT "CELL")
-}
 
-Node* create_node(int element) {
+
+Node* create_node(Cell* element) {
     Node* node = (Node*)malloc(sizeof(Node));
     node->element = element;
     node->left = NULL;
@@ -45,12 +43,12 @@ Node* left_rotate(Node* z) {
     return y;
 }
 
-Node* insert(Node* root, int element) {
+Node* insert(Node* root, Cell* element) {
     if (root == NULL) return create_node(element);
 
-    if (element < root->element)
+    if (custom_comparator(element, root->element))
         root->left = insert(root->left, element);
-    else if (element > root->element)
+    else if (custom_comparator(root->element, element))
         root->right = insert(root->right, element);
     else
         return root;
@@ -59,13 +57,13 @@ Node* insert(Node* root, int element) {
 
     int difference = height_diff(root);
 
-    if (difference > 1 && element < root->left->element) return right_rotate(root);
-    if (difference < -1 && element > root->right->element) return left_rotate(root);
-    if (difference > 1 && element > root->left->element) {
+    if (difference > 1 && custom_comparator(element, root->left->element)) return right_rotate(root);
+    if (difference < -1 && custom_comparator(root->right->element, element)) return left_rotate(root);
+    if (difference > 1 && custom_comparator(root->left->element, element)) {
         root->left = left_rotate(root->left);
         return right_rotate(root);
     }
-    if (difference < -1 && element < root->right->element) {
+    if (difference < -1 && custom_comparator(element, root->right->element)) {
         root->right = right_rotate(root->right);
         return left_rotate(root);
     }
@@ -79,12 +77,26 @@ Node* min_value_node(Node* node) {
     return current;
 }
 
-Node* erase(Node* root, int element) {
+void deleteTree(Node* node) {
+    if (node == NULL) return;
+
+    deleteTree(node->left);
+    deleteTree(node->right);
+
+    free(node);
+}
+
+void resetTree(AVL* avl) {
+    deleteTree(avl->root);
+    avl->root = NULL;
+}
+
+Node* erase(Node* root, Cell* element) {
     if (root == NULL) return root;
 
-    if (element < root->element)
+    if (custom_comparator(element, root->element))
         root->left = erase(root->left, element);
-    else if (element > root->element)
+    else if (custom_comparator(root->element, element))
         root->right = erase(root->right, element);
     else {
         if ((root->left == NULL) || (root->right == NULL)) {
@@ -125,13 +137,13 @@ Node* erase(Node* root, int element) {
 void inorder(Node* root) {
     if (root == NULL) return;
     inorder(root->left);
-    printf("%d ", root->element);
+    printf("%d ", root->element->value); // Assuming Cell has a value field
     inorder(root->right);
 }
 
 void preorder(Node* root) {
     if (root == NULL) return;
-    printf("%d ", root->element);
+    printf("%d ", root->element->value); // Assuming Cell has a value field
     preorder(root->left);
     preorder(root->right);
 }
@@ -140,7 +152,7 @@ void postorder(Node* root) {
     if (root == NULL) return;
     postorder(root->left);
     postorder(root->right);
-    printf("%d ", root->element);
+    printf("%d ", root->element->value); // Assuming Cell has a value field
 }
 
 void level(Node* root) {
@@ -158,7 +170,7 @@ void level(Node* root) {
             if (front < rear) queue[rear++] = NULL;
             printf("\n");
         } else {
-            printf("%d ", temp->element);
+            printf("%d ", temp->element->value); // Assuming Cell has a value field
             if (temp->left) queue[rear++] = temp->left;
             if (temp->right) queue[rear++] = temp->right;
         }
@@ -169,22 +181,29 @@ int main() {
     AVL avl;
     avl.root = NULL;
 
-    avl.root = insert(avl.root, 10);
+    Cell cell1 = { .value = 10 };
+    Cell cell2 = { .value = 20 };
+    Cell cell3 = { .value = 30 };
+    Cell cell4 = { .value = 40 };
+    Cell cell5 = { .value = 50 };
+    Cell cell6 = { .value = 25 };
+
+    avl.root = insert(avl.root, &cell1);
     printf("Level order traversal: \n");
     level(avl.root);
-    avl.root = insert(avl.root, 20);
+    avl.root = insert(avl.root, &cell2);
     printf("Level order traversal: \n");
     level(avl.root);
-    avl.root = insert(avl.root, 30);
+    avl.root = insert(avl.root, &cell3);
     printf("Level order traversal: \n");
     level(avl.root);
-    avl.root = insert(avl.root, 40);
+    avl.root = insert(avl.root, &cell4);
     printf("Level order traversal: \n");
     level(avl.root);
-    avl.root = insert(avl.root, 50);
+    avl.root = insert(avl.root, &cell5);
     printf("Level order traversal: \n");
     level(avl.root);
-    avl.root = insert(avl.root, 25);
+    avl.root = insert(avl.root, &cell6);
     printf("Level order traversal: \n");
     level(avl.root);
 
@@ -195,7 +214,7 @@ int main() {
     printf("Level order traversal: \n");
     level(avl.root);
 
-    avl.root = erase(avl.root, 10);
+    avl.root = erase(avl.root, &cell1);
 
     printf("\nInorder traversal after deletion: ");
     inorder(avl.root);
