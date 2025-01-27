@@ -4,7 +4,7 @@
     #define windowWidth  10
     #define windowHeight 10
     
-    typedef enum ops { FIX, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, SLEEP} ops;
+    typedef enum ops { FIX, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, SLEEP, DISABLE_OUT, ENABLE_OUT, SCROLL} ops;
     typedef struct Cell_func Cell_func;
 
     typedef struct {
@@ -23,7 +23,6 @@
     };
         
     void evaluate(Cell** data, Cell *cell, int R ,int C);
-
 
 
 #endif
