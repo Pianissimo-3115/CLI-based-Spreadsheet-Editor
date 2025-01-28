@@ -5,7 +5,7 @@
 // #include<string.h>
 
 // #define dtype struct cell
-typedef enum {Invalid, Movement, Assignment} inputType;
+typedef enum inputType {Invalid, Movement, Assignment, Display} inputType;
 
 // bool { true = 1, false = 0};
 
@@ -119,6 +119,7 @@ struct parsedInput
 
 };
 
+
 /* ERRORS:
 0 : Invalid input
 1 : Address out of range
@@ -126,9 +127,108 @@ struct parsedInput
 */
 
 
-void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  Not Done/Temp  */
+void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos) /*  Not Done/Temp  */
 {
 
+    char checkdisable[15] = "disable_output\0";
+    char checkenable[14] = "enable_output\0";
+    char checkgoto[10] = "scroll_to ";
+
+    if (check_chars_equal(inp, checkdisable, 15))
+    {
+        parsed_out -> inpType = Display;
+        parsed_out -> operation = DISABLE_OUT;
+        return;
+    }
+    if (check_chars_equal(inp, checkenable, 14))
+    {
+        parsed_out -> inpType = Display;
+        parsed_out -> operation = ENABLE_OUT;
+        return;
+    }
+    if (check_chars_equal(inp, checkdisable, 10))
+    {
+        parsed_out -> inpType = Display;
+        parsed_out -> operation = SCROLL;
+        
+        int rangeStart = 10;
+
+        int val1Col = 0;
+        int val1Row = 0;
+        int i = 0;
+        while (i < 3)
+        {
+            if ('Z' >= inp[rangeStart + i] && 'A' <= inp[rangeStart + i])
+            {
+                val1Col = 26*val1Col + (inp[rangeStart + i] - 'A' + 1);
+                i++;
+            }
+            else if ('9' >= inp[rangeStart + i] && '0' <= inp[rangeStart + i])
+            {
+                if (i == 0)
+                {
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
+                    return;
+                }
+                break;
+            }
+            else
+            {
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
+                return;
+            }
+        }
+
+        if (!('9' >= inp[rangeStart + i] && '0' <= inp[rangeStart + i]))
+        {
+            parsed_out -> inpType = Invalid;
+            parsed_out -> val1Int = 0; //Invalid syntax
+            return;
+        }
+
+        val1Row = inp[rangeStart + i] - '0';
+        int j = 1;
+        while (j < 3)
+        {
+
+            if ('9' >= inp[rangeStart + i+j] && '0' <= inp[rangeStart + i+j])
+            {
+                val1Row = 10*val1Row + (inp[rangeStart + i+j] - '0');
+                j++;
+            }
+            else if (inp[rangeStart + i+j] == ':')
+            {
+                break;
+            }
+            else
+            {
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
+                return;
+            }
+        }
+
+
+        if (inp[rangeStart + i+j] != '\0')
+        {
+            parsed_out -> inpType = Invalid;
+            parsed_out -> val1Int = 0; //Invalid syntax
+            return;
+        }
+
+        if (val1Col > C || val1Row > R || val1Row <= 0)
+        {
+            parsed_out -> inpType = Invalid;
+            parsed_out -> val1Int = 1; //Address out of range
+            return;
+        }
+
+        return;
+
+    }
+    
 
     if ( inp[1] == '\0' ) //Input has only one character => Must be movement
     {
@@ -162,7 +262,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
-        }
+        } 
         return;
         
     }
@@ -170,8 +270,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
     {
         printf("Has more than one character.\n");
         //Parse target address
-        char* currCharPtr = inp;
-        char targetColChar[3];
+        
         int targetCol = inp[0] - 'A' + 1;
         int targetRow;
 
@@ -301,31 +400,80 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
             parsed_out -> operation = SLEEP;
             rangeStart = exprStart + 6;
 
-            if (!('9' >= inp[rangeStart] && '0' <= inp[rangeStart]))
+            if ('9' >= inp[rangeStart] && '0' <= inp[rangeStart]) //val1 is an integer
+            {
+                int val1Int = 0;
+                i = 0;
+                j = 0;
+                while ('9' >= inp[rangeStart+i] && '0' <= inp[rangeStart+i])
+                {
+                    val1Int = val1Int*10 + inp[rangeStart+i] - '0';
+                    i++;
+                }
+                parsed_out -> val1Type = 0; 
+                parsed_out -> val1Int = val1Int;
+            }
+            else if ('Z' >= inp[rangeStart] && 'A' <= inp[rangeStart]) //val1 is an address
+            {
+
+                //Get address column (max three characters)
+                i = 0;
+                int val1Col = 0;
+                while ('Z' >= inp[rangeStart + i] && 'A' <= inp[rangeStart + i] && i<3)
+                {
+                    val1Col = val1Col*26 + inp[rangeStart + i] - 'A' + 1;
+                    i++;
+                }
+
+                if (!('9' >= inp[rangeStart+i] && '0' <= inp[rangeStart+i])) //Column letters must be followed by a number
+                {
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 0; //Invalid syntax
+                    return;                    
+                }
+
+                //Get address row (max three characters)
+                j = 0;
+                int val1Row = 0;
+                while ('9' >= inp[rangeStart + i + j] && '0' <= inp[rangeStart + i + j] && j<3)
+                {
+                    val1Row = val1Row*10 + inp[rangeStart + i + j] - '0';
+                    j++;
+                }
+
+                if (val1Col > C || val1Row > R || val1Row <= 0) //Must be within bounds
+                {
+                    parsed_out -> inpType = Invalid;
+                    parsed_out -> val1Int = 1; //Address out of range
+                    return;
+                }
+                
+                parsed_out -> val1Type = 1;
+                parsed_out -> val1Col = val1Col;
+                parsed_out -> val1Row = val1Row;
+                
+            }
+            else //Value is neither address nor value
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
 
-            int val1Int = 0;
-            i = 0;
-            while ('9' >= inp[rangeStart+i] && '0' <= inp[rangeStart+i])
-            {
-                val1Int = val1Int*10 + inp[rangeStart+i] - '0';
-                i++;
-            }
-
-            if (inp[rangeStart + i] != ')' || inp[rangeStart + i + 1] != '\0')
+            if (inp[rangeStart + i + j] != ')')
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
 
-            parsed_out -> inpType = Assignment;
-            parsed_out -> val1Type = 0; 
-            parsed_out -> val1Int = val1Int;
+            if (inp[rangeStart + i + j + 1] != '\0')
+            {
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
+                return;
+            }
+
             return;
             
         }
@@ -676,7 +824,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C) /*  No
 }
 
 
-int display_window(Cell** data, int currR, int currC, int R, int C)
+void display_window(Cell** data, int currR, int currC, int R, int C)
 {
 
     char colChars[3];
@@ -760,10 +908,10 @@ int main()
     }
     
 
-    
+    int errPos = -1;
     printf("%s\n", inp);
     struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
-    parse_input(inp, &parse, R, C);
+    parse_input(inp, &parse, R, C, &errPos);
     switch (parse.inpType)
     {
     case 0:

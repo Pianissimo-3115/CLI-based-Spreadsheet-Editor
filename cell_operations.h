@@ -5,7 +5,7 @@
     #define windowHeight 10
     #include "data_structures.h"
     
-    typedef enum ops { FIX, SLEEP, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG} ops;
+    typedef enum ops { FIX, SLEEP, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, DISABLE_OUT, ENABLE_OUT, SCROLL} ops;
     typedef struct Cell_func Cell_func;
 
     typedef struct {
@@ -33,7 +33,6 @@
     };
         
     void evaluate(Cell** data, Cell *cell, int R ,int C);
-
 
 
 #endif
