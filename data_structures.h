@@ -13,12 +13,12 @@
         Node* root;
     } AVL;
 
-    Node* create_node(int element);
+    Node* create_node(Cell* element);
 
 
-    Node* insert(Node* root, int element);
+    Node* insert(Node* root, Cell* element);
 
-    Node* erase(Node* root, int element);   // REMOVE ELEMENT FROM THE SUBTREE ROOTED AT *root
+    Node* erase(Node* root, Cell* element);   // REMOVE ELEMENT FROM THE SUBTREE ROOTED AT *root
 
     bool custom_comparator(Node* element1, Node* element2){
         if(element1->element->depth==element2->element->depth){

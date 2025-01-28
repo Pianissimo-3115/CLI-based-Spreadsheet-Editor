@@ -5,11 +5,11 @@
     #define windowHeight 10
     #include "data_structures.h"
     
-    typedef enum ops { FIX, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, SLEEP} ops;
+    typedef enum ops { FIX, SLEEP, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG} ops;
     typedef struct Cell_func Cell_func;
 
     typedef struct {
-        int col_name;
+        int col_name;           
         int row_num;
         int value; 
         int valid;                      
@@ -19,11 +19,17 @@
         
     } Cell;
 
-    struct Cell_func {
-        Cell* Cell1;
-        Cell* Cell2;
-        ops op;
-        int fix_val;
+    struct Cell_func {      ////////////////// TO PREVENT BUG, we can keep a rule that in a unary operation, everything should be set to NULL except Cell1 or value1. In binary operations, either of Cell1 and Value1 should be NULL and either of Cell2 and Value2 should be NULL 
+        union{
+            int value1;
+            Cell* Cell1;
+        };
+        union{
+            int value2;
+            Cell* Cell2;
+        };
+        bool flag1,flag2;       ////////////// THESE FLAGS SHOULD BE TRUE IF CELL IS USED AND FALSE IF FIX VALUE IS USED
+        ops op;        
     };
         
     void evaluate(Cell** data, Cell *cell, int R ,int C);
