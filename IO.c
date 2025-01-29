@@ -120,12 +120,61 @@ struct parsedInput
 };
 
 
+bool in_range(char mid, char lower, char upper) 
+{
+    return (upper >= mid && mid >= lower);
+}
+
+bool is_up_char(char ch)
+{
+    return ('Z' >= ch && ch >= 'A');
+}
+
+bool is_digit(char ch)
+{
+    return ('9' >= ch && ch >= '0');
+}
+
 /* ERRORS:
 0 : Invalid input
 1 : Address out of range
 2 : Range is invalid (opposite order)
 */
+void fetch_addr(char* instr, int* row_out, int* col_out, int* len_out)
+{
+    int row = 0;
+    int col = 0;
+    if (!is_up_char(instr[0]))
+    {
+        *len_out = 0;
+        return;
+    }
+    //Get address column (max three characters)
+    int i = 0;
+    while (is_up_char(instr[i]) && i<3)
+    {
+        col = col*26 + instr[i] - 'A' + 1;
+        i++;
+    }
 
+    if (!(is_digit(instr[i]))) //Column letters must be followed by a number
+    {
+        *len_out = -i;
+        return;                  
+    }
+
+    //Get address row (max three characters)
+    int j = 0;
+    while (is_digit(instr[i+j]) && j<3)
+    {
+        row = row*10 + instr[i + j] - '0';
+        j++;
+    }
+    *row_out = row;
+    *col_out = row;
+    *len_out = i + j;
+    return;
+}
 
 void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos) /*  Not Done/Temp  */
 {
@@ -155,63 +204,18 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
 
         int val1Col = 0;
         int val1Row = 0;
-        int i = 0;
-        while (i < 3)
-        {
-            if ('Z' >= inp[rangeStart + i] && 'A' <= inp[rangeStart + i])
-            {
-                val1Col = 26*val1Col + (inp[rangeStart + i] - 'A' + 1);
-                i++;
-            }
-            else if ('9' >= inp[rangeStart + i] && '0' <= inp[rangeStart + i])
-            {
-                if (i == 0)
-                {
-                    parsed_out -> inpType = Invalid;
-                    parsed_out -> val1Int = 0; //Invalid syntax
-                    return;
-                }
-                break;
-            }
-            else
-            {
-                parsed_out -> inpType = Invalid;
-                parsed_out -> val1Int = 0; //Invalid syntax
-                return;
-            }
-        }
+        int addrLen = 0;
 
-        if (!('9' >= inp[rangeStart + i] && '0' <= inp[rangeStart + i]))
+        fetch_addr(inp[rangeStart], &val1Row, &val1Col, &addrLen);
+        
+        if (addrLen <= 0)
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
             return;
         }
 
-        val1Row = inp[rangeStart + i] - '0';
-        int j = 1;
-        while (j < 3)
-        {
-
-            if ('9' >= inp[rangeStart + i+j] && '0' <= inp[rangeStart + i+j])
-            {
-                val1Row = 10*val1Row + (inp[rangeStart + i+j] - '0');
-                j++;
-            }
-            else if (inp[rangeStart + i+j] == ':')
-            {
-                break;
-            }
-            else
-            {
-                parsed_out -> inpType = Invalid;
-                parsed_out -> val1Int = 0; //Invalid syntax
-                return;
-            }
-        }
-
-
-        if (inp[rangeStart + i+j] != '\0')
+        if (inp[rangeStart + addrLen] != '\0')
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
@@ -271,68 +275,25 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         printf("Has more than one character.\n");
         //Parse target address
         
-        int targetCol = inp[0] - 'A' + 1;
-        int targetRow;
+        int targetCol = 0;
+        int targetRow = 0;
+        int addrLen = 0;
 
-        //Parse target column
-        int i = 1;
-        while (i < 3)
-        {
-            if ('Z' >= inp[i] && 'A' <= inp[i])
-            {
-                targetCol = 26*targetCol + (inp[i] - 'A' + 1);
-                i++;
-            }
-            else if ('9' >= inp[i] && '0' <= inp[i])
-            {
-                break;
-            }
-            else
-            {
-                parsed_out -> inpType = Invalid;
-                parsed_out -> val1Int = 0; //Invalid syntax
-                return;
-            }
-        }
+        fetch_addr(inp, &targetRow, &targetCol, &addrLen);
 
-        if (!('9' >= inp[i] && '0' <= inp[i]))
-        {
-            parsed_out -> inpType = Invalid;
-            parsed_out -> val1Int = 0; //Invalid syntax
-            return;
-        }
-        
-
-        //Parse target row
-        targetRow = inp[i] - '0';
-        int j = 1;
-        while (j < 3)
-        {
-
-            if ('9' >= inp[i+j] && '0' <= inp[i+j])
-            {
-                targetRow = 10*targetRow + (inp[i+j] - '0');
-                j++;
-            }
-            else if (inp[i+j] == '=')
-            {
-                break;
-            }
-            else
-            {
-                parsed_out -> inpType = Invalid;
-                parsed_out -> val1Int = 0; //Invalid syntax
-                return;
-            }
-        }
-
-        if (inp[i+j] != '=') //Must be followed by an assignment operator
+        if (addrLen <= 0)
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
             return;
         }
 
+        if (inp[addrLen] != '=') //Must be followed by an assignment operator
+        {
+            parsed_out -> inpType = Invalid;
+            parsed_out -> val1Int = 0; //Invalid syntax
+            return;
+        }
 
         if (targetCol > C || targetRow > R || targetRow <= 0) //Must be in range
         {
@@ -340,15 +301,11 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             parsed_out -> val1Int = 1; //Address out of range
             return;
         }
-
-        // printf("targetCol.\n");
-
-
         //Target parsed successfully
         parsed_out->targetCol = targetCol;
         parsed_out->targetRow = targetRow;
 
-        int exprStart = i+j+1; //expression starts here
+        int exprStart = addrLen+1; //expression starts here
 
         //Check if it is a function
         int rangeStart;
@@ -399,46 +356,33 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             // isFunc = true;
             parsed_out -> operation = SLEEP;
             rangeStart = exprStart + 6;
-
+            int val1Len = 0;
             if ('9' >= inp[rangeStart] && '0' <= inp[rangeStart]) //val1 is an integer
             {
                 int val1Int = 0;
-                i = 0;
-                j = 0;
+                int i = 0;
                 while ('9' >= inp[rangeStart+i] && '0' <= inp[rangeStart+i])
                 {
                     val1Int = val1Int*10 + inp[rangeStart+i] - '0';
                     i++;
                 }
+                val1Len = i;
                 parsed_out -> val1Type = 0; 
                 parsed_out -> val1Int = val1Int;
             }
             else if ('Z' >= inp[rangeStart] && 'A' <= inp[rangeStart]) //val1 is an address
             {
 
-                //Get address column (max three characters)
-                i = 0;
                 int val1Col = 0;
-                while ('Z' >= inp[rangeStart + i] && 'A' <= inp[rangeStart + i] && i<3)
-                {
-                    val1Col = val1Col*26 + inp[rangeStart + i] - 'A' + 1;
-                    i++;
-                }
+                int val1Row = 0;
 
-                if (!('9' >= inp[rangeStart+i] && '0' <= inp[rangeStart+i])) //Column letters must be followed by a number
+                fetch_addr(inp[rangeStart], &val1Row, &val1Col, &val1Len);
+
+                if (val1Len <= 0)
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; //Invalid syntax
-                    return;                    
-                }
-
-                //Get address row (max three characters)
-                j = 0;
-                int val1Row = 0;
-                while ('9' >= inp[rangeStart + i + j] && '0' <= inp[rangeStart + i + j] && j<3)
-                {
-                    val1Row = val1Row*10 + inp[rangeStart + i + j] - '0';
-                    j++;
+                    return;
                 }
 
                 if (val1Col > C || val1Row > R || val1Row <= 0) //Must be within bounds
@@ -460,14 +404,14 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 return;
             }
 
-            if (inp[rangeStart + i + j] != ')')
+            if (inp[rangeStart + val1Len] != ')')
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
 
-            if (inp[rangeStart + i + j + 1] != '\0')
+            if (inp[rangeStart + val1Len + 1] != '\0')
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
@@ -483,63 +427,18 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             //Parse range start
             int val1Col = 0;
             int val1Row = 0;
-            int i = 0;
-            while (i < 3)
-            {
-                if ('Z' >= inp[rangeStart + i] && 'A' <= inp[rangeStart + i])
-                {
-                    val1Col = 26*val1Col + (inp[rangeStart + i] - 'A' + 1);
-                    i++;
-                }
-                else if ('9' >= inp[rangeStart + i] && '0' <= inp[rangeStart + i])
-                {
-                    if (i == 0)
-                    {
-                        parsed_out -> inpType = Invalid;
-                        parsed_out -> val1Int = 0; //Invalid syntax
-                        return;
-                    }
-                    break;
-                }
-                else
-                {
-                    parsed_out -> inpType = Invalid;
-                    parsed_out -> val1Int = 0; //Invalid syntax
-                    return;
-                }
-            }
+            int val1Len = 0;
+            
+            fetch_addr(inp[rangeStart], &val1Row, &val1Col, &val1Len);
 
-            if (!('9' >= inp[rangeStart + i] && '0' <= inp[rangeStart + i]))
+            if (val1Len <= 0)
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
-                return;
+                return;   
             }
 
-            val1Row = inp[rangeStart + i] - '0';
-            int j = 1;
-            while (j < 3)
-            {
-
-                if ('9' >= inp[rangeStart + i+j] && '0' <= inp[rangeStart + i+j])
-                {
-                    val1Row = 10*val1Row + (inp[rangeStart + i+j] - '0');
-                    j++;
-                }
-                else if (inp[rangeStart + i+j] == ':')
-                {
-                    break;
-                }
-                else
-                {
-                    parsed_out -> inpType = Invalid;
-                    parsed_out -> val1Int = 0; //Invalid syntax
-                    return;
-                }
-            }
-
-
-            if (inp[rangeStart + i+j] != ':')
+            if (inp[rangeStart + val1Len] != ':')
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
@@ -553,69 +452,23 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 return;
             }
 
-            int rangeEnd = rangeStart + i+j+1;
+            int rangeEnd = rangeStart + val1Len +1;
 
             //Parse range end
             int val2Col = 0;
             int val2Row = 0;
-            i = 0;
-            while (i < 3)
-            {
-                if ('Z' >= inp[rangeEnd + i] && 'A' <= inp[rangeEnd + i])
-                {
-                    val2Col = 26*val2Col + (inp[rangeEnd + i] - 'A' + 1);
-                    i++;
-                }
-                else if ('9' >= inp[rangeEnd + i] && '0' <= inp[rangeEnd + i])
-                {
-                    if (i == 0)
-                    {
-                        parsed_out -> inpType = Invalid;
-                        parsed_out -> val1Int = 0; //Invalid syntax
-                        return;
-                    }
-                    break;
-                }
-                else
-                {
-                    parsed_out -> inpType = Invalid;
-                    parsed_out -> val1Int = 0; //Invalid syntax
-                    return;
-                }
-            }
+            int val2Len = 0;
+            
+            fetch_addr(inp[rangeEnd], &val2Row, &val2Col, &val2Len);
 
-            if (!('9' >= inp[rangeEnd+i] && '0' <= inp[rangeEnd+i]))
+            if (val2Len <= 0)
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
                 return;
             }
 
-            val2Row = inp[rangeEnd + i] - '0';
-            j = 1;
-            while (j < 3)
-            {
-
-                if ('9' >= inp[rangeEnd + i+j] && '0' <= inp[rangeEnd + i+j])
-                {
-                    val2Row = 10*val2Row + (inp[rangeEnd + i+j] - '0');
-                    j++;
-                }
-                else if (inp[rangeEnd + i+j] == ')')
-                {
-                    break;
-                }
-                else
-                {
-                    parsed_out -> inpType = Invalid;
-                    parsed_out -> val1Int = 0; //Invalid syntax
-                    return;
-                }
-
-            }
-
-
-            if (inp[rangeEnd + i+j] != ')')
+            if (inp[rangeEnd + val2Len] != ')')
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
@@ -647,45 +500,34 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         }
         else //It is not a function => Must be number or address
         {
+            int val1Len = 0;
             if ('9' >= inp[exprStart] && '0' <= inp[exprStart]) //val1 is an integer
             {
                 int val1Int = 0;
-                i = 0;
-                j = 0;
+                int i = 0;
                 while ('9' >= inp[exprStart+i] && '0' <= inp[exprStart+i])
                 {
                     val1Int = val1Int*10 + inp[exprStart+i] - '0';
                     i++;
                 }
+                val1Len = i;
                 parsed_out -> val1Type = 0; 
                 parsed_out -> val1Int = val1Int;
             }
             else if ('Z' >= inp[exprStart] && 'A' <= inp[exprStart]) //val1 is an address
             {
 
-                //Get address column (max three characters)
-                i = 0;
+                
                 int val1Col = 0;
-                while ('Z' >= inp[exprStart + i] && 'A' <= inp[exprStart + i] && i<3)
-                {
-                    val1Col = val1Col*26 + inp[exprStart + i] - 'A' + 1;
-                    i++;
-                }
+                int val1Row = 0;
 
-                if (!('9' >= inp[exprStart+i] && '0' <= inp[exprStart+i])) //Column letters must be followed by a number
+                fetch_addr(inp[exprStart], &val1Row, &val1Col, &val1Len);
+
+                if (val1Len <= 0)
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; //Invalid syntax
-                    return;                    
-                }
-
-                //Get address row (max three characters)
-                j = 0;
-                int val1Row = 0;
-                while ('9' >= inp[exprStart + i + j] && '0' <= inp[exprStart + i + j] && j<3)
-                {
-                    val1Row = val1Row*10 + inp[exprStart + i + j] - '0';
-                    j++;
+                    return;
                 }
 
                 if (val1Col > C || val1Row > R || val1Row <= 0) //Must be within bounds
@@ -707,7 +549,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 return;
             }
             
-            if (inp[exprStart + i + j] == '\0') //If it does not have anything else (thus direct assignment)
+            if (inp[exprStart + val1Len] == '\0') //If it does not have anything else (thus direct assignment)
             {
                 parsed_out->inpType = Assignment;
                 parsed_out -> operation = FIX;
@@ -715,22 +557,22 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 return;
             }
             
-            else if (inp[exprStart + i + j] == '+')
+            else if (inp[exprStart + val1Len] == '+')
             {
                 parsed_out->inpType = Assignment;
                 parsed_out -> operation = ADD;
             }
-            else if (inp[exprStart + i + j] == '-')
+            else if (inp[exprStart + val1Len] == '-')
             {
                 parsed_out->inpType = Assignment;
                 parsed_out -> operation = SUB;
             }
-            else if (inp[exprStart + i + j] == '*')
+            else if (inp[exprStart + val1Len] == '*')
             {
                 parsed_out->inpType = Assignment;
                 parsed_out -> operation = MUL;
             }
-            else if (inp[exprStart + i + j] == '/')
+            else if (inp[exprStart + val1Len] == '/')
             {
                 parsed_out->inpType = Assignment;
                 parsed_out -> operation = DIV;
@@ -743,47 +585,36 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             }
             
             //Get val 2
-            int exprSecond = exprStart + i + j + 1;
-
+            int exprSecond = exprStart + val1Len + 1;
+            int val2Len = 0;
             if ('9' >= inp[exprSecond] && '0' <= inp[exprSecond]) //val2 is an integer
             {
                 int val2Int = 0;
-                i = 0;
-                j = 0;
+                int i = 0;
+                
                 while ('9' >= inp[exprSecond+i] && '0' <= inp[exprSecond+i])
                 {
                     val2Int = val2Int*10 + inp[exprSecond+i] - '0';
                     i++;
                 }
+                val2Len = i;
                 parsed_out -> val2Type = 0; 
                 parsed_out -> val2Int = val2Int;
             }
             else if ('Z' >= inp[exprSecond] && 'A' <= inp[exprSecond]) //val2 is an address
             {
 
-                //Get address column (max three characters)
-                i = 0;
-                int val2Col = 0;
-                while ('Z' >= inp[exprSecond + i] && 'A' <= inp[exprSecond + i] && i<3)
-                {
-                    val2Col = val2Col*26 + inp[exprSecond + i] - 'A' + 1;
-                    i++;
-                }
 
-                if (!('9' >= inp[exprSecond+i] && '0' <= inp[exprSecond+i])) //Column letters must be followed by a number
+                int val2Col = 0;
+                int val2Row = 0;
+
+                fetch_addr(inp[rangeStart], &val2Row, &val2Col, &val2Len);
+
+                if (val2Len <= 0)
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; //Invalid syntax
-                    return;                    
-                }
-
-                //Get address row (max three characters)
-                j = 0;
-                int val2Row = 0;
-                while ('9' >= inp[exprSecond + i + j] && '0' <= inp[exprSecond + i + j] && j<3)
-                {
-                    val2Row = val2Row*10 + inp[exprSecond + i + j] - '0';
-                    j++;
+                    return;
                 }
 
                 if (val2Col > C || val2Row > R || val2Row <= 0) //Must be within bounds
@@ -799,7 +630,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 
             }
 
-            if (inp[exprSecond + i + j] != '\0')
+            if (inp[exprSecond + val2Len] != '\0')
             {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; // Wrong Syntax
@@ -809,8 +640,6 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             return;
 
         }
-
-
         
     }
     else //Input had more than one character and first character was not alphabet (beginning of address) => Invalid
@@ -824,40 +653,40 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
 }
 
 
-void display_window(Cell** data, int currR, int currC, int R, int C)
-{
+// void display_window(Cell** data, int currR, int currC, int R, int C)
+// {
 
-    char colChars[3];
-    printf("          ");
-    for (int i = currC; i < currC + windowWidth && i <= C; i++)
-    {
-        col_chars_from_int(i, colChars);
-        printf("%10s", colChars);
+//     char colChars[3];
+//     printf("          ");
+//     for (int i = currC; i < currC + windowWidth && i <= C; i++)
+//     {
+//         col_chars_from_int(i, colChars);
+//         printf("%10s", colChars);
 
-    }
-    printf("\n");
+//     }
+//     printf("\n");
 
-    Cell** runningPtr = data;
-    for (int i = currR; i < currR + windowHeight && i <= R; i++)
-    {
-        printf("%10d", i);
-        for (int j = currC; j < currC + windowWidth && i <= C; j++)
-        {
-            if (*(data + C*i + j - 1) == NULL)
-            {
-                printf("%10d", 0);
-            }
-            else
-            {
-                printf("%10d", (**(data + C*i + j - 1)).value);
-            }
-        }
-        printf("\n");
+//     Cell** runningPtr = data;
+//     for (int i = currR; i < currR + windowHeight && i <= R; i++)
+//     {
+//         printf("%10d", i);
+//         for (int j = currC; j < currC + windowWidth && i <= C; j++)
+//         {
+//             if (*(data + C*i + j - 1) == NULL)
+//             {
+//                 printf("%10d", 0);
+//             }
+//             else
+//             {
+//                 printf("%10d", (**(data + C*i + j - 1)).value);
+//             }
+//         }
+//         printf("\n");
         
-    }
+//     }
     
-    // printf("done");
-}
+//     // printf("done");
+// }
 
 // struct addr addr_to_cell(char* addr, int addr_len, int R, int C)
 // {
@@ -881,7 +710,7 @@ void display_window(Cell** data, int currR, int currC, int R, int C)
 // }
 
 
-int main()
+static int main()
 {
 
     // unsigned int R, C;
