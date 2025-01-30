@@ -3,7 +3,7 @@
 #include <time.h>
 #include <limits.h>
 #include <math.h>
-#include "cell_operations.h"
+#include "data_structures.h"
 #define max(A, B) ((A) > (B) ? (A) : (B))
 #define min(A, B) ((A) < (B) ? (A) : (B))
 

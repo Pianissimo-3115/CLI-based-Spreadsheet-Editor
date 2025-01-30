@@ -1,43 +1,32 @@
 #ifndef DATA_STRUCTURES_H
 #define DATA_STRUCTURES_H
-    #include<stdbool.h>
-    // #include "cell_operations.h"
-    typedef struct Cell Cell;
-    typedef struct Node {
-        Cell* element;            ///////////////////////////////// THIS HAS TO BE CHANGED ACCORDING TO USE CASE (MOSTLY WILL BE USED ON DATA TYPE "CELL")
-        struct Node* left;
-        struct Node* right;
-        int height;
-    } Node;
 
-    typedef struct AVL {
-        Node* root;
-    } AVL;
+#include <stdbool.h>
+#include "cell_operations.h"
 
-    Node* create_node(Cell* element);
+// AVL tree structures
+typedef struct Node Node;
+typedef struct AVL AVL;
 
+struct Node {
+    Cell* element;            
+    struct Node* left;
+    struct Node* right;
+    int height;
+};
 
-    Node* insert(Node* root, Cell* element);
+struct AVL {
+    Node* root;
+};
 
-    Node* erase(Node* root, Cell* element);   // REMOVE ELEMENT FROM THE SUBTREE ROOTED AT *root
-
-    bool custom_comparator(Node* element1, Node* element2){
-        if(element1->element->depth==element2->element->depth){
-            if(element1->element->col_name==element2->element->col_name){
-                return element1->element->row_num<element2->element->row_num;
-            }
-            return element1->element->col_name<element2->element->col_name;
-        }
-        return element1->element->depth<element2->element->depth;
-    }
-
-    void inorder(Node* root);               // INORDER TRAVERSAL OF THE SUBTREE ROOTED AT *root
-
-    void level(Node* root);                 //DEPTH OF THE GIVEN NODE
-
-    void resetTree(AVL* avl);                 //RESET THE WHOLE TREE
-
-    void deleteTree(Node* root);            //DELETE THE WHOLE TREE
+// AVL tree operations
+Node* create_node(Cell* element);
+Node* insert(Node* root, Cell* element);
+Node* erase(Node* root, Cell* element);
+bool custom_comparator(Node* element1, Node* element2);
+void inorder(Node* root);
+void level(Node* root);
+void resetTree(AVL* avl);
+void deleteTree(Node* root);
 
 #endif
-

@@ -1,8 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "cell_operations.h"
+#include "data_structures.h"
 #include <stdbool.h>
 
+
+bool custom_comparator(Node* element1, Node* element2){
+    if(element1->element->depth==element2->element->depth){
+        if(element1->element->col_name==element2->element->col_name){
+            return element1->element->row_num<element2->element->row_num;
+        }
+        return element1->element->col_name<element2->element->col_name;
+    }
+    return element1->element->depth<element2->element->depth;
+}
 
 Node* create_node(Cell* element) {
     Node* node = (Node*)malloc(sizeof(Node));
