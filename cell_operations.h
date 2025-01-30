@@ -3,10 +3,13 @@
 
     #define windowWidth  10
     #define windowHeight 10
-    #include "data_structures.h"
+    #include<stdbool.h>
+
+    // #include "data_structures.h"
     
     typedef enum ops { FIX, SLEEP, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, DISABLE_OUT, ENABLE_OUT, SCROLL} ops;
     typedef struct Cell_func Cell_func;
+    typedef struct AVL AVL;
 
     typedef struct {
         int col_name;           

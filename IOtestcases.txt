@@ -1,3 +1,6 @@
+
+# Sentences starting with # and empty lines are ignored
+
 # Valid one letter commands
 w
 a
@@ -8,7 +11,6 @@ q
 # Valid value assignments
 A12=23
 BB23=D1
-
 # Valid arithmetic exressions
 # +
 AA99=D88+A8
@@ -41,11 +43,16 @@ AA99=SLEEP(D89)
 AA99=SLEEP(93)
 
 # Valid display commands
-disable_out
-enable_out
+disable_output
+enable_output
 scroll_to B34
 
-
+# Valid negetive inputs
+YYY888=-2345702
+YYY888=-23425*BB243
+YYY888=23425*-243
+YYY888=-23425*-243
+YYY888=ABC425*-243
 
 
 

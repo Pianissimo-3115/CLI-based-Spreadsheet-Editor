@@ -5,3 +5,6 @@ IO.ilk
 IO.obj
 IO.pdb
 vc140.pdb
+*.ilk
+*.obj
+*.pdb

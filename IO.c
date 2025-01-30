@@ -171,7 +171,7 @@ void fetch_addr(char* instr, int* row_out, int* col_out, int* len_out)
         j++;
     }
     *row_out = row;
-    *col_out = row;
+    *col_out = col;
     *len_out = i + j;
     return;
 }
@@ -195,7 +195,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         parsed_out -> operation = ENABLE_OUT;
         return;
     }
-    if (check_chars_equal(inp, checkdisable, 10))
+    if (check_chars_equal(inp, checkgoto, 10))
     {
         parsed_out -> inpType = Display;
         parsed_out -> operation = SCROLL;
@@ -206,7 +206,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         int val1Row = 0;
         int addrLen = 0;
 
-        fetch_addr(inp[rangeStart], &val1Row, &val1Col, &addrLen);
+        fetch_addr(inp+rangeStart, &val1Row, &val1Col, &addrLen);
         
         if (addrLen <= 0)
         {
@@ -229,6 +229,9 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             return;
         }
 
+        parsed_out -> val1Type = 1;
+        parsed_out -> val1Row = val1Row;
+        parsed_out -> val1Col = val1Col;
         return;
 
     }
@@ -236,7 +239,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
 
     if ( inp[1] == '\0' ) //Input has only one character => Must be movement
     {
-        printf("Only has one character.\n");
+        // printf("Only has one character.\n");
         if ( inp[0] == 'w' )
         {
             parsed_out -> inpType = Movement;
@@ -272,7 +275,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
     }
     else if ( 'Z' >= inp[0] && 'A' <= inp[0]) //Input has more than one character => Must be an assignment
     {
-        printf("Has more than one character.\n");
+        // printf("Has more than one character.\n");
         //Parse target address
         
         int targetCol = 0;
@@ -357,6 +360,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             parsed_out -> operation = SLEEP;
             rangeStart = exprStart + 6;
             int val1Len = 0;
+
             if ('9' >= inp[rangeStart] && '0' <= inp[rangeStart]) //val1 is an integer
             {
                 int val1Int = 0;
@@ -376,7 +380,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 int val1Col = 0;
                 int val1Row = 0;
 
-                fetch_addr(inp[rangeStart], &val1Row, &val1Col, &val1Len);
+                fetch_addr(inp+rangeStart, &val1Row, &val1Col, &val1Len);
 
                 if (val1Len <= 0)
                 {
@@ -392,6 +396,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                     return;
                 }
                 
+
                 parsed_out -> val1Type = 1;
                 parsed_out -> val1Col = val1Col;
                 parsed_out -> val1Row = val1Row;
@@ -418,6 +423,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 return;
             }
 
+            parsed_out->inpType = Assignment;
             return;
             
         }
@@ -429,7 +435,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             int val1Row = 0;
             int val1Len = 0;
             
-            fetch_addr(inp[rangeStart], &val1Row, &val1Col, &val1Len);
+            fetch_addr(inp+rangeStart, &val1Row, &val1Col, &val1Len);
 
             if (val1Len <= 0)
             {
@@ -459,7 +465,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             int val2Row = 0;
             int val2Len = 0;
             
-            fetch_addr(inp[rangeEnd], &val2Row, &val2Col, &val2Len);
+            fetch_addr(inp+rangeEnd, &val2Row, &val2Col, &val2Len);
 
             if (val2Len <= 0)
             {
@@ -501,6 +507,12 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         else //It is not a function => Must be number or address
         {
             int val1Len = 0;
+            bool isneg = false;
+            if (inp[exprStart] == '-')
+            {
+                isneg = true;
+                exprStart = exprStart + 1;
+            }
             if ('9' >= inp[exprStart] && '0' <= inp[exprStart]) //val1 is an integer
             {
                 int val1Int = 0;
@@ -510,18 +522,19 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                     val1Int = val1Int*10 + inp[exprStart+i] - '0';
                     i++;
                 }
+                if (isneg) val1Int = -val1Int;
                 val1Len = i;
                 parsed_out -> val1Type = 0; 
                 parsed_out -> val1Int = val1Int;
             }
-            else if ('Z' >= inp[exprStart] && 'A' <= inp[exprStart]) //val1 is an address
+            else if ('Z' >= inp[exprStart] && 'A' <= inp[exprStart] && !isneg) //val1 is an address
             {
 
                 
                 int val1Col = 0;
                 int val1Row = 0;
 
-                fetch_addr(inp[exprStart], &val1Row, &val1Col, &val1Len);
+                fetch_addr(inp+exprStart, &val1Row, &val1Col, &val1Len);
 
                 if (val1Len <= 0)
                 {
@@ -587,6 +600,12 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             //Get val 2
             int exprSecond = exprStart + val1Len + 1;
             int val2Len = 0;
+            isneg = false;
+            if (inp[exprSecond] == '-')
+            {
+                isneg = true;
+                exprSecond = exprSecond + 1;
+            }
             if ('9' >= inp[exprSecond] && '0' <= inp[exprSecond]) //val2 is an integer
             {
                 int val2Int = 0;
@@ -597,18 +616,18 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                     val2Int = val2Int*10 + inp[exprSecond+i] - '0';
                     i++;
                 }
+                if (isneg) val2Int = -val2Int;
                 val2Len = i;
                 parsed_out -> val2Type = 0; 
                 parsed_out -> val2Int = val2Int;
             }
-            else if ('Z' >= inp[exprSecond] && 'A' <= inp[exprSecond]) //val2 is an address
+            else if ('Z' >= inp[exprSecond] && 'A' <= inp[exprSecond] && !isneg) //val2 is an address
             {
-
 
                 int val2Col = 0;
                 int val2Row = 0;
 
-                fetch_addr(inp[rangeStart], &val2Row, &val2Col, &val2Len);
+                fetch_addr(inp+exprSecond, &val2Row, &val2Col, &val2Len);
 
                 if (val2Len <= 0)
                 {
@@ -710,103 +729,103 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
 // }
 
 
-static int main()
-{
+// static int main()
+// {
 
-    // unsigned int R, C;
-    // scanf("%u %u", &R, &C);
+//     // unsigned int R, C;
+//     // scanf("%u %u", &R, &C);
     
-    // Cell** data = calloc(R*C, sizeof(Cell*));
+//     // Cell** data = calloc(R*C, sizeof(Cell*));
 
-    // display_window(data, 23, 23, R, C);
+//     // display_window(data, 23, 23, R, C);
 
-    int R = 2000000;
-    int C = 200000;
-    char inp[30] = "";
+//     int R = 2000000;
+//     int C = 200000;
+//     char inp[30] = "";
 
 
-    // scanf("%s %s", inp, inp2);
-    int i = 0;
-    int c;
-    while ((c = getchar()) != EOF && c != '\n' && i < 30)
-    {
-        inp[i] = c;
-        // printf("%c", c);
-        i++;
+//     // scanf("%s %s", inp, inp2);
+//     int i = 0;
+//     int c;
+//     while ((c = getchar()) != EOF && c != '\n' && i < 30)
+//     {
+//         inp[i] = c;
+//         // printf("%c", c);
+//         i++;
 
-    }
+//     }
     
 
-    int errPos = -1;
-    printf("%s\n", inp);
-    struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
-    parse_input(inp, &parse, R, C, &errPos);
-    switch (parse.inpType)
-    {
-    case 0:
-        printf("Invalid\n");
-        break;
-    case 1:
-        printf("Movement\n");
-        break;
-    case 2:
-        printf("Assignment\n");
-        break;
-    default:
-        break;
-    }
-    // printf("%i\n", parse.inpType);
+//     int errPos = -1;
+//     printf("%s\n", inp);
+//     struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
+//     parse_input(inp, &parse, R, C, &errPos);
+//     switch (parse.inpType)
+//     {
+//     case 0:
+//         printf("Invalid\n");
+//         break;
+//     case 1:
+//         printf("Movement\n");
+//         break;
+//     case 2:
+//         printf("Assignment\n");
+//         break;
+//     default:
+//         break;
+//     }
+//     // printf("%i\n", parse.inpType);
 
-    switch (parse.operation)
-    {
-    case 0:
-        printf("FIX\n");
-        break;
-    case 1:
-        printf("ADD\n");
-        break;
-    case 2:
-        printf("SUB\n");
-        break;
-    case 3:
-        printf("MUL\n");
-        break;
-    case 4:
-        printf("DIV\n");
-        break;  
-    case 5:
-        printf("MIN\n");
-        break;
-    case 6:
-        printf("MAX\n");
-        break;
-    case 7:
-        printf("STDEV\n");
-        break;
-    case 8:
-        printf("SUM\n");
-        break;
-    case 9:
-        printf("AVG\n");
-        break;
-    case 10:
-        printf("SLEEP\n");
-        break;
-    default:
-        break;
-    }
+//     switch (parse.operation)
+//     {
+//     case 0:
+//         printf("FIX\n");
+//         break;
+//     case 1:
+//         printf("ADD\n");
+//         break;
+//     case 2:
+//         printf("SUB\n");
+//         break;
+//     case 3:
+//         printf("MUL\n");
+//         break;
+//     case 4:
+//         printf("DIV\n");
+//         break;  
+//     case 5:
+//         printf("MIN\n");
+//         break;
+//     case 6:
+//         printf("MAX\n");
+//         break;
+//     case 7:
+//         printf("STDEV\n");
+//         break;
+//     case 8:
+//         printf("SUM\n");
+//         break;
+//     case 9:
+//         printf("AVG\n");
+//         break;
+//     case 10:
+//         printf("SLEEP\n");
+//         break;
+//     default:
+//         break;
+//     }
 
-    printf("val1Type %i\n", parse.val1Type);
-    printf("val1Col %i\n", parse.val1Col);
-    printf("val1Row %i\n", parse.val1Row);
-    printf("val1Int %i\n", parse.val1Int);
- //
-    printf("val2Type %i\n", parse.val2Type);
-    printf("val2Col %i\n", parse.val2Col);
-    printf("val2Row %i\n", parse.val2Row);
-    printf("val2Int %i\n", parse.val2Int);
+//     printf("val1Type %i\n", parse.val1Type);
+//     printf("val1Col %i\n", parse.val1Col);
+//     printf("val1Row %i\n", parse.val1Row);
+//     printf("val1Int %i\n", parse.val1Int);
+//  //
+//     printf("val2Type %i\n", parse.val2Type);
+//     printf("val2Col %i\n", parse.val2Col);
+//     printf("val2Row %i\n", parse.val2Row);
+//     printf("val2Int %i\n", parse.val2Int);
 
-    printf("targetCol %i\n", parse.targetCol);
-    printf("targetRow %i\n", parse.targetRow);
+//     printf("targetCol %i\n", parse.targetCol);
+//     printf("targetRow %i\n", parse.targetRow);
     
-}
+// }
