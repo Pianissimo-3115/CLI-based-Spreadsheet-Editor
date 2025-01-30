@@ -1,4 +1,5 @@
-
+~R1000
+~C19000
 # Sentences starting with # and empty lines are ignored
 
 # Valid one letter commands
@@ -53,6 +54,48 @@ YYY888=-23425*BB243
 YYY888=23425*-243
 YYY888=-23425*-243
 YYY888=ABC425*-243
+
+#Testing
+
+#Target Testing
+Z
+ZZZ
+asdfadf
+wa
+qa
+e
+disable_outputoo
+enable_outputoo
+scroll_tolalaland
+scroll_toA4
+zD9
+ZZZZ235
+A4355
+232
+Z4A space should give error
+~R20
+~C50
+Z0=5
+Z005=5
+Z0005=5
+Z20=5
+Z21=5
+AX5=5
+AX012=5
+AY12=5
+A12=5
+A1=5k
+
+#scroll_to Test
+scroll_to B6
+scroll_to AY20
+scroll_to AX20
+scroll_to AX0020
+scroll_to AX25
+scroll_toAX25
+scroll_to AX200=
+scroll_to AX2000
+
 
 
 

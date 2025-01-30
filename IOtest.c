@@ -8,7 +8,8 @@ int main()
 {
     FILE *file_ptr;
     file_ptr = fopen("IOtestcases.txt", "r");
-
+    int R = 1000;
+    int C = 19000;
     if (file_ptr == NULL)
     {
         printf("Test file could not be opened.");
@@ -19,12 +20,14 @@ int main()
     int errPos = 0;
     while (fgets(line, 100, file_ptr) != NULL)
     {
-        if (line[0] != '#' && line[0] != '\n')
+        if (line[0] != '#' && line[0] != '\n' && line[0] != '~') printf("\n> ");// else printf("\n");
+        printf("%s", line);
+        if (line[0] != '#' && line[0] != '\n' && line[0] != '~')
         {
-            printf("\n> %s", line);
+            
             line[strcspn(line, "\n")] = 0;
             struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
-            parse_input(line, &parse, 999, 18000, &errPos);
+            parse_input(line, &parse, R, C, &errPos);
 
             switch (parse.inpType)
             {
@@ -300,69 +303,48 @@ int main()
                     break;
                     case 13:
                     printf("scroll to ");
-                    printf("(%d, %d)", parse.val1Col, parse.val1Row);
+                    printf("(%d, %d)\n", parse.val1Col, parse.val1Row);
                     break;
                     default:
-                    printf("Unexpected parse");
+                    printf("!!!!!!!!!!Unexpected parse\n");
                 }
                 break;
             default:
-                printf("Unexpected parse");
+                printf("!!!!!!!!!!!Unexpected parse\n");
                 break;
             }
 
-        //     switch (parse.operation)
-        //     {
-        //     case 0:
-        //         printf("FIX\n");
-        //         break;
-        //     case 1:
-        //         printf("ADD\n");
-        //         break;
-        //     case 2:
-        //         printf("SUB\n");
-        //         break;
-        //     case 3:
-        //         printf("MUL\n");
-        //         break;
-        //     case 4:
-        //         printf("DIV\n");
-        //         break;  
-        //     case 5:
-        //         printf("MIN\n");
-        //         break;
-        //     case 6:
-        //         printf("MAX\n");
-        //         break;
-        //     case 7:
-        //         printf("STDEV\n");
-        //         break;
-        //     case 8:
-        //         printf("SUM\n");
-        //         break;
-        //     case 9:
-        //         printf("AVG\n");
-        //         break;
-        //     case 10:
-        //         printf("SLEEP\n");
-        //         break;
-        //     default:
-        //         break;
-        //     }
-
-        //     printf("val1Type %i\n", parse.val1Type);
-        //     printf("val1Col %i\n", parse.val1Col);
-        //     printf("val1Row %i\n", parse.val1Row);
-        //     printf("val1Int %i\n", parse.val1Int);
-        // //
-        //     printf("val2Type %i\n\n", parse.val2Type);
-        //     printf("val2Col %i\n\n", parse.val2Col);
-        //     printf("val2Row %i\n\n", parse.val2Row);
-        //     printf("val2Int %i\n\n", parse.val2Int);
-
-        //     printf("targetCol %i\n", parse.targetCol);
-        //     printf("targetRow %i\n", parse.targetRow);
+        
         }
+        else if (line[0] == '~')
+        {
+            if (line[1] == 'R')
+            {
+                int Rtemp = 0;
+                int i = 0;
+                while ('9' >= line[2+i] && '0' <= line[2+i])
+                {
+                    Rtemp = Rtemp*10 + line[2+i] - '0';
+                    i++;
+                }
+                R = Rtemp;
+                printf("Set R to %d\n", R);
+            }
+            else if (line[1] == 'C')
+            {
+                int Ctemp = 0;
+                int i = 0;
+                while ('9' >= line[2+i] && '0' <= line[2+i])
+                {
+                    Ctemp = Ctemp*10 + line[2+i] - '0';
+                    i++;
+                }
+                C = Ctemp;
+                printf("Set C to %d\n", C);
+
+            }
+        }
+        
     }
 
 }
