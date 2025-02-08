@@ -71,6 +71,7 @@ bool check_chars_equal(char* str1, char* str2, int n)
 
 void col_chars_from_int(int col, char* out)
 {
+    out[3] = '\0';
     if (col <= 26)
     {
         out[2] = '\0';
@@ -80,16 +81,16 @@ void col_chars_from_int(int col, char* out)
     else if (col <= 702) //26*26 + 26
     {
         out[2] = '\0';
-        out[1] = 'A' + col%26 - 1;
-        col/=26;
+        out[1] = 'A' + (col-1)%26;
+        col = (col-1)/26;
         out[0] = 'A' + col - 1;
     }
     else if (col <= 18278) //26*26*26 + 26*26 + 26
     {
-        out[2] = 'A' + col%26 - 1;
-        col/=26;
-        out[1] = 'A' + col%26 - 1;
-        col/=26;
+        out[2] = 'A' + (col-1)%26;
+        col = (col-1)/26;
+        out[1] = 'A' + (col-1)%26;
+        col = (col-1)/26;
         out[0] = 'A' + col - 1;
     }
     //Wrong input
@@ -670,7 +671,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
 void display_window(Cell** data, int currR, int currC, int R, int C)
 {
 
-    char colChars[3];
+    char colChars[4];
     printf("          ");
     for (int i = currC; i < currC + windowWidth && i <= C; i++)
     {
@@ -684,15 +685,15 @@ void display_window(Cell** data, int currR, int currC, int R, int C)
     for (int i = currR; i < currR + windowHeight && i <= R; i++)
     {
         printf("%10d", i);
-        for (int j = currC; j < currC + windowWidth && i <= C; j++)
+        for (int j = currC; j < currC + windowWidth && j <= C; j++)
         {
-            if (*(data + C*i + j - 1) == NULL)
+            if (*(data + C*(i-1) + j - 1) == NULL)
             {
                 printf("%10d", 0);
             }
             else
             {
-                printf("%10d", (**(data + C*i + j - 1)).value);
+                printf("%10d", (**(data + C*(i-1) + j - 1)).value);
             }
         }
         printf("\n");
