@@ -1,7 +1,7 @@
 #include<stdio.h>
-#include"stdlib.h"
+#include<stdlib.h>
 #include"cell_operations.h"
-#include<stdbool.h>
+// #include<stdbool.h>
 // #include<string.h>
 
 // #define dtype struct cell
@@ -825,4 +825,4 @@ void display_window(Cell** data, int currR, int currC, int R, int C)
     
 // }
 
-int main(){ return 0; }
+// int main(){ return 0; }

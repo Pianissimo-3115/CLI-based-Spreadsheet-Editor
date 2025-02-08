@@ -40,7 +40,6 @@ struct Cell_func {
     ops op;        
 };
 
-void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
 
 typedef enum inputType {Invalid, Movement, Assignment, Display} inputType;
 struct parsedInput
@@ -66,7 +65,7 @@ struct parsedInput
     // char target[6];
 
 };
-
+void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
 void evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C);
 
 #endif

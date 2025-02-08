@@ -1,4 +1,4 @@
-
+#include<stdlib.h>
 #include<stdio.h>
 // #include<stdbool.h>
 #include"cell_operations.h"
@@ -10,6 +10,7 @@ Take input
 
 
 */
+// void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
 
 
 int main()
@@ -36,7 +37,7 @@ int main()
 
     int errPos;
     struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
-    parse_input(inp, &parse, R, C, &errPos);
+    parse_input(&inp[0], &parse, R, C, &errPos);
 
 
 }
