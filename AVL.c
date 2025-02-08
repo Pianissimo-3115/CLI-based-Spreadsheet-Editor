@@ -5,14 +5,14 @@
 #include <stdbool.h>
 
 
-bool custom_comparator(Node* element1, Node* element2){
-    if(element1->element->depth==element2->element->depth){
-        if(element1->element->col_name==element2->element->col_name){
-            return element1->element->row_num<element2->element->row_num;
+bool custom_comparator(Cell* element1, Cell* element2) {
+    if (element1->depth == element2->depth) {
+        if (element1->col_name == element2->col_name) {
+            return element1->row_num < element2->row_num;
         }
-        return element1->element->col_name<element2->element->col_name;
+        return element1->col_name < element2->col_name;
     }
-    return element1->element->depth<element2->element->depth;
+    return element1->depth < element2->depth;
 }
 
 Node* create_node(Cell* element) {
@@ -145,26 +145,38 @@ Node* erase(Node* root, Cell* element) {
     return root;
 }
 
-void inorder(Node* root) {
-    if (root == NULL) return;
-    inorder(root->left);
-    printf("%d ", root->element->value); // Assuming Cell has a value field
-    inorder(root->right);
+int inorder_helper(Node* root, Cell** arr, int index) {
+    if (root == NULL)
+        return index;
+    // Traverse left subtree
+    index = inorder_helper(root->left, arr, index);
+    // Copy the current node's element into the array
+    *arr[index] = *(root->element);
+    index++;
+    // Traverse right subtree
+    index = inorder_helper(root->right, arr, index);
+    return index;
 }
 
-void preorder(Node* root) {
-    if (root == NULL) return;
-    printf("%d ", root->element->value); // Assuming Cell has a value field
-    preorder(root->left);
-    preorder(root->right);
+// Fills the array `arr` with the inorder traversal of the tree and
+// returns the number of cells copied.
+int inorder(Node* root, Cell** arr) {
+    return inorder_helper(root, arr, 0);
 }
 
-void postorder(Node* root) {
-    if (root == NULL) return;
-    postorder(root->left);
-    postorder(root->right);
-    printf("%d ", root->element->value); // Assuming Cell has a value field
-}
+// Cell* preorder(Node* root) {
+//     if (root == NULL) return;
+//     printf("%d ", root->element->value); // Assuming Cell has a value field
+//     preorder(root->left);
+//     preorder(root->right);
+// }
+
+// Cell* postorder(Node* root) {
+//     if (root == NULL) return;
+//     postorder(root->left);
+//     postorder(root->right);
+//     printf("%d ", root->element->value); // Assuming Cell has a value field
+// }
 
 void level(Node* root) {
     if (root == NULL) return;
@@ -219,17 +231,33 @@ int main() {
     level(avl.root);
 
     printf("Inorder traversal: ");
-    inorder(avl.root);
+    Cell* arr[100];
+    inorder(avl.root,&arr[0]);
     printf("\n");
-
+    for (int i = 0; i < 100; i++)
+    {
+        if(arr[i] == NULL) continue;
+        printf("%d ", arr[i]->value);
+    }
+    for (int i = 0; i < 100; i++)
+    {
+        if(arr[i]!=NULL){
+            free(arr[i]);
+        }
+    }
+    
     printf("Level order traversal: \n");
     level(avl.root);
 
     avl.root = erase(avl.root, &cell1);
-
+    // Cell* arr[100];
     printf("\nInorder traversal after deletion: ");
-    inorder(avl.root);
+    inorder(avl.root,&arr[0]);
     printf("\n");
-
+    for (int i = 0; i < 100; i++)
+    {
+        if(arr[i] == NULL) continue;
+        printf("%d ", arr[i]->value);
+    }
     return 0;
 }

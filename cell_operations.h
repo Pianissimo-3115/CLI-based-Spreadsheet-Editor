@@ -36,11 +36,11 @@ struct Cell_func {
         int value2;
         Cell* Cell2;
     };
-    bool flag1, flag2;
+    bool flag1, flag2;              // FOR BOTH FLAGS: 0 MEANS VALUE, 1 MEANS CELL      IF NOT USING TWO VALUES (SLEEP OR FIX) IDLE SHOULD BE 0
     ops op;        
 };
 
 
-void evaluate(Cell** data, Cell *cell, int R, int C);
+void evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C);
 
 #endif

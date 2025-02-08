@@ -23,8 +23,8 @@ struct AVL {
 Node* create_node(Cell* element);
 Node* insert(Node* root, Cell* element);
 Node* erase(Node* root, Cell* element);
-bool custom_comparator(Node* element1, Node* element2);
-void inorder(Node* root);
+bool custom_comparator(Cell* element1, Cell* element2);
+int inorder(Node* root, Cell** arr);
 void level(Node* root);
 void resetTree(AVL* avl);
 void deleteTree(Node* root);
