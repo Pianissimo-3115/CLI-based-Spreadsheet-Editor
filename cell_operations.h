@@ -40,6 +40,32 @@ struct Cell_func {
     ops op;        
 };
 
+void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
+
+typedef enum inputType {Invalid, Movement, Assignment, Display} inputType;
+struct parsedInput
+{
+    inputType inpType;
+
+    ops operation;
+
+    bool val1Type; // 1 if address, 0 if int
+    int val1Col;
+    int val1Row;
+    int val1Int;
+    // char val1Addr[6];
+
+    bool val2Type;
+    int val2Col;
+    int val2Row;
+    int val2Int;
+    // char val2Addr[6];
+
+    int targetCol;
+    int targetRow;
+    // char target[6];
+
+};
 
 void evaluate(Cell** data, Cell *cell, int R, int C);
 

@@ -19,6 +19,8 @@ struct AVL {
     Node* root;
 };
 
+
+
 // AVL tree operations
 Node* create_node(Cell* element);
 Node* insert(Node* root, Cell* element);

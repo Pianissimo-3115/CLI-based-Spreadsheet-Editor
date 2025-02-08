@@ -5,7 +5,7 @@
 // #include<string.h>
 
 // #define dtype struct cell
-typedef enum inputType {Invalid, Movement, Assignment, Display} inputType;
+// typedef enum inputType {Invalid, Movement, Assignment, Display} inputType;
 
 // bool { true = 1, false = 0};
 
@@ -69,55 +69,55 @@ bool check_chars_equal(char* str1, char* str2, int n)
 //     return out;
 // }
 
-// void col_chars_from_int(int col, char* out)
-// {
-//     if (col <= 26)
-//     {
-//         out[2] = '\0';
-//         out[1] = '\0';
-//         out[0] = 'A' + col - 1;
-//     }
-//     else if (col <= 702) //26*26 + 26
-//     {
-//         out[2] = '\0';
-//         out[1] = 'A' + col%26 - 1;
-//         col/=26;
-//         out[0] = 'A' + col - 1;
-//     }
-//     else if (col <= 18278) //26*26*26 + 26*26 + 26
-//     {
-//         out[2] = 'A' + col%26 - 1;
-//         col/=26;
-//         out[1] = 'A' + col%26 - 1;
-//         col/=26;
-//         out[0] = 'A' + col - 1;
-//     }
-//     //Wrong input
-// }
-
-struct parsedInput
+void col_chars_from_int(int col, char* out)
 {
-    inputType inpType;
+    if (col <= 26)
+    {
+        out[2] = '\0';
+        out[1] = '\0';
+        out[0] = 'A' + col - 1;
+    }
+    else if (col <= 702) //26*26 + 26
+    {
+        out[2] = '\0';
+        out[1] = 'A' + col%26 - 1;
+        col/=26;
+        out[0] = 'A' + col - 1;
+    }
+    else if (col <= 18278) //26*26*26 + 26*26 + 26
+    {
+        out[2] = 'A' + col%26 - 1;
+        col/=26;
+        out[1] = 'A' + col%26 - 1;
+        col/=26;
+        out[0] = 'A' + col - 1;
+    }
+    //Wrong input
+}
 
-    ops operation;
+// struct parsedInput
+// {
+//     inputType inpType;
 
-    bool val1Type; // 1 if address, 0 if int
-    int val1Col;
-    int val1Row;
-    int val1Int;
-    // char val1Addr[6];
+//     ops operation;
 
-    bool val2Type;
-    int val2Col;
-    int val2Row;
-    int val2Int;
-    // char val2Addr[6];
+//     bool val1Type; // 1 if address, 0 if int
+//     int val1Col;
+//     int val1Row;
+//     int val1Int;
+//     // char val1Addr[6];
 
-    int targetCol;
-    int targetRow;
-    // char target[6];
+//     bool val2Type;
+//     int val2Col;
+//     int val2Row;
+//     int val2Int;
+//     // char val2Addr[6];
 
-};
+//     int targetCol;
+//     int targetRow;
+//     // char target[6];
+
+// };
 
 
 bool is_up_char(char ch)
@@ -171,7 +171,7 @@ void fetch_addr(char* instr, int* row_out, int* col_out, int* len_out)
     return;
 }
 
-void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos) /*  Not Done/Temp  */
+void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos)
 {
 
     char checkdisable[15] = "disable_output\0";
@@ -667,40 +667,40 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
 }
 
 
-// void display_window(Cell** data, int currR, int currC, int R, int C)
-// {
+void display_window(Cell** data, int currR, int currC, int R, int C)
+{
 
-//     char colChars[3];
-//     printf("          ");
-//     for (int i = currC; i < currC + windowWidth && i <= C; i++)
-//     {
-//         col_chars_from_int(i, colChars);
-//         printf("%10s", colChars);
+    char colChars[3];
+    printf("          ");
+    for (int i = currC; i < currC + windowWidth && i <= C; i++)
+    {
+        col_chars_from_int(i, colChars);
+        printf("%10s", colChars);
 
-//     }
-//     printf("\n");
+    }
+    printf("\n");
 
-//     Cell** runningPtr = data;
-//     for (int i = currR; i < currR + windowHeight && i <= R; i++)
-//     {
-//         printf("%10d", i);
-//         for (int j = currC; j < currC + windowWidth && i <= C; j++)
-//         {
-//             if (*(data + C*i + j - 1) == NULL)
-//             {
-//                 printf("%10d", 0);
-//             }
-//             else
-//             {
-//                 printf("%10d", (**(data + C*i + j - 1)).value);
-//             }
-//         }
-//         printf("\n");
+    Cell** runningPtr = data;
+    for (int i = currR; i < currR + windowHeight && i <= R; i++)
+    {
+        printf("%10d", i);
+        for (int j = currC; j < currC + windowWidth && i <= C; j++)
+        {
+            if (*(data + C*i + j - 1) == NULL)
+            {
+                printf("%10d", 0);
+            }
+            else
+            {
+                printf("%10d", (**(data + C*i + j - 1)).value);
+            }
+        }
+        printf("\n");
         
-//     }
+    }
     
-//     // printf("done");
-// }
+    // printf("done");
+}
 
 // struct addr addr_to_cell(char* addr, int addr_len, int R, int C)
 // {
@@ -824,3 +824,5 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
 //     printf("targetRow %i\n", parse.targetRow);
     
 // }
+
+int main(){ return 0; }
