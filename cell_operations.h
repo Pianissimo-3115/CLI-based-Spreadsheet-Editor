@@ -5,6 +5,8 @@
 
 #define windowWidth  10
 #define windowHeight 10
+#define max(A, B) ((A) > (B) ? (A) : (B))
+#define min(A, B) ((A) < (B) ? (A) : (B))
 
 typedef struct AVL AVL;
 typedef struct Cell Cell;
@@ -66,6 +68,7 @@ struct parsedInput
 
 };
 void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
+void display_window(Cell** data, int currR, int currC, int R, int C);
 void evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C);
 
 #endif

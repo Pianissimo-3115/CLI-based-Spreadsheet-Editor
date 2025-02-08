@@ -1,19 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-// Define the node structure
-typedef struct ll_Node {
-    int data;
-    struct ll_Node* next;
-} ll_Node;
-
-// Define the linked list structure
-typedef struct {
-    ll_Node* head;
-} LinkedList;
+#include "data_structures.h"
 
 // Function to create a new node
-ll_Node* createNode(int data) {
+ll_Node* createNode(Cell* data) {
     ll_Node* newNode = (ll_Node*)malloc(sizeof(ll_Node));
     if (!newNode) {
         return NULL;
@@ -24,7 +14,7 @@ ll_Node* createNode(int data) {
 }
 
 // Function to insert a node at the end of the linked list
-void insertAtEnd(LinkedList* list, int data) {
+void insertAtEnd(LinkedList* list, Cell* data) {
     ll_Node* newNode = createNode(data);
     if (!newNode) return;
 
@@ -40,17 +30,18 @@ void insertAtEnd(LinkedList* list, int data) {
 }
 
 // Function to insert a node at a given position
-void insertAtPosition(ll_Node* position, int data) {
+void insertAtPosition(ll_Node* position, Cell* data) {
     if (position == NULL) {
         return;
     }
-
     ll_Node* newNode = createNode(data);
     if (!newNode) return;
 
     newNode->next = position->next;
     position->next = newNode;
+
 }
+
 
 // Function to free the memory of the linked list
 void freeLinkedList(LinkedList* list) {
@@ -66,19 +57,19 @@ void freeLinkedList(LinkedList* list) {
     list->head = NULL;
 }
 
-int main() {
-    LinkedList list;
-    list.head = NULL;
+// int main() {
+//     LinkedList list;
+//     list.head = NULL;
 
-    insertAtEnd(&list, 10);
-    insertAtEnd(&list, 20);
-    insertAtEnd(&list, 30);
+//     insertAtEnd(&list, 10);
+//     insertAtEnd(&list, 20);
+//     insertAtEnd(&list, 30);
 
-    ll_Node* position = list.head->next; // Insert after the first node
-    insertAtPosition(position, 25);
+//     ll_Node* position = list.head->next; // Insert after the first node
+//     insertAtPosition(position, 25);
 
-    // Free the memory
-    freeLinkedList(&list);
+//     // Free the memory
+//     freeLinkedList(&list);
 
-    return 0;
-}
+//     return 0;
+// }

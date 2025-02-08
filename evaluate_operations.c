@@ -4,8 +4,7 @@
 #include <limits.h>
 #include <math.h>
 #include "data_structures.h"
-#define max(A, B) ((A) > (B) ? (A) : (B))
-#define min(A, B) ((A) < (B) ? (A) : (B))
+
 
 int min_eval(Cell** data,Cell* cell, Cell_func* func, int R, int C){         
     Cell* cell1 = func->Cell1;
@@ -126,8 +125,6 @@ void remove_old_dependencies(Cell** data, Cell_func* old_func, Cell* cell, int R
             }
         } 
     }
-    // not a range function => either constant value or binary
-    // ∃ only two constant functions, SLEEP and FIX | if FIX, simply ignore. For sleep check if sleep for const time or cell address
     else{        
         if(old_func->flag1) {
             old_func->Cell1->children->root=erase(old_func->Cell1->children->root,cell);
@@ -201,29 +198,114 @@ void update_parent_avls(Cell** data, Cell *cell, int R, int C){
             }
         }
     }
+    else{
+        if(func->flag1) {
+            func->Cell1->children->root=insert(func->Cell1->children->root,cell);
+        }
+        if(func->flag2) {
+            func->Cell2->children->root=insert(func->Cell2->children->root,cell);
+        }
+    }
 
 }
 
-void update_children(Cell** data, Cell* cell) {
-    AVL* children=cell->children;
-    
+void update_children(Cell** data, Cell* cell, int R, int C) {
+    LinkedList merged;
+    merged.head = NULL;
+    inorder(cell->children->root, &merged, merged.head);
+    while(merged.head != NULL) {
+        Cell* element=merged.head->data;
+        calculate(data,element,R,C);
+        // HERE WE HAVE TO CALL UPDATE_DEPTH
+        // BUT I DIDN'T DO IT BECAUSE PROBABLY WE CAN MAKE IT MORE OPTIMIZED BY NOT USING UPDATE_DEPTH
+        // ALSO, EK AUR KAAM BAKI HAI, LOOP DETECTION
+        ll_Node* temp=merged.head;
+        merged.head=merged.head->next;
+        free(temp);
+        inorder(element->children->root, &merged, merged.head);
+    }
 }
 
 
 void evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) { 
     int initial_value=cell->value;
-    calculate(data, cell, R, C);
     remove_old_dependencies(data, old_func, cell, R, C);
+    calculate(data, cell, R, C);
     update_depth(data, cell, R, C);
     update_parent_avls(data,cell,R,C);
     if (cell->value != initial_value) {
-        update_children(data, cell);            ///////////////////// TO BE IMPLEMENTED
+        update_children(data, cell, R, C);            ///////////////////// TO BE IMPLEMENTED
     }
     return;
 }
 int main(){
-    unsigned int R, C;
-    scanf("%u %u", &R, &C);
-    // Cell** data = calloc(R*C, sizeof(Cell*));
-    // display_window(data, 23, 23, R, C);    
+    Cell cell1 = { .value = 0, .col_name = 1, .row_num = 1, .valid = 1, .func = NULL, .children = NULL, .depth = 0};
+    Cell cell2 = { .value = 1, .col_name = 2, .row_num = 1, .valid = 1, .func = NULL, .children = NULL, .depth = 1};
+    Cell cell3 = { .value = 2, .col_name = 1, .row_num = 2, .valid = 1, .func = NULL, .children = NULL, .depth = 2};
+    Cell cell4 = { .value = 3, .col_name = 2, .row_num = 2, .valid = 1, .func = NULL, .children = NULL, .depth = 3};
+    Cell cell5 = { .value = 4, .col_name = 3, .row_num = 3, .valid = 1, .func = NULL, .children = NULL, .depth = 4};
+    Cell cell6 = { .value = 5, .col_name = 4, .row_num = 4, .valid = 1, .func = NULL, .children = NULL, .depth = 5};
+    cell1.children = (AVL*)malloc(sizeof(AVL));
+    cell1.children->root = NULL;
+    cell1.children->root = insert(cell1.children->root, &cell2);
+    cell1.children->root = insert(cell1.children->root, &cell3);
+    cell1.children->root = insert(cell1.children->root, &cell4);
+    cell1.children->root = insert(cell1.children->root, &cell5);
+    cell1.children->root = insert(cell1.children->root, &cell6);
+    cell2.children = (AVL*)malloc(sizeof(AVL));
+    cell2.children->root = NULL;
+    cell2.children->root = insert(cell2.children->root, &cell3);
+    cell2.children->root = insert(cell2.children->root, &cell4);
+    cell2.children->root = insert(cell2.children->root, &cell5);
+    cell2.children->root = insert(cell2.children->root, &cell6);
+    cell3.children = (AVL*)malloc(sizeof(AVL));
+    cell3.children->root = NULL;
+    cell3.children->root = insert(cell3.children->root, &cell4);
+    cell3.children->root = insert(cell3.children->root, &cell5);
+    cell3.children->root = insert(cell3.children->root, &cell6);
+    cell4.children = (AVL*)malloc(sizeof(AVL));
+    cell4.children->root = NULL;
+    cell4.children->root = insert(cell4.children->root, &cell5);
+    cell4.children->root = insert(cell4.children->root, &cell6);
+    cell5.children = (AVL*)malloc(sizeof(AVL));
+    cell5.children->root = NULL;
+    cell5.children->root = insert(cell5.children->root, &cell6);
+    LinkedList merged;
+    merged.head = NULL;
+    inorder(cell5.children->root, &merged, merged.head);
+    ll_Node* temp = merged.head;
+    while (temp != NULL) {
+        printf("%d ", temp->data->value);
+        temp = temp->next;
+    }
+    printf("\n");
+    inorder(cell4.children->root, &merged, merged.head);
+    temp = merged.head;
+    while (temp != NULL) {
+        printf("%d ", temp->data->value);
+        temp = temp->next;
+    }
+    printf("\n");
+    inorder(cell3.children->root, &merged, merged.head);
+    temp = merged.head;
+    while (temp != NULL) {
+        printf("%d ", temp->data->value);
+        temp = temp->next;
+    }
+    printf("\n");
+    inorder(cell2.children->root, &merged, merged.head);
+    temp = merged.head;
+    while (temp != NULL) {
+        printf("%d ", temp->data->value);
+        temp = temp->next;
+    }
+    printf("\n");
+    inorder(cell1.children->root, &merged, merged.head);
+    temp = merged.head;
+    while (temp != NULL) {
+        printf("%d ", temp->data->value);
+        temp = temp->next;
+    }
+    printf("\n");
+    printf("Done\n");
 }
