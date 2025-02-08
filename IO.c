@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include"stdlib.h"
-#include "cell_operations.h"
+#include"cell_operations.h"
 #include<stdbool.h>
 // #include<string.h>
 
@@ -23,12 +23,12 @@ typedef enum inputType {Invalid, Movement, Assignment, Display} inputType;
 
 // emptycell = (struct cell) {0,0};
 
-void mainloop(int* data, int R, int C) /*  Not Done/Temp  */
-{
-    char cmd[50];
-    scanf("%s", cmd);
+// void mainloop(int* data, int R, int C) /*  Not Done/Temp  */
+// {
+//     char cmd[50];
+//     scanf("%s", cmd);
 
-}
+// }
 
 bool check_chars_equal(char* str1, char* str2, int n)
 {
@@ -43,57 +43,57 @@ bool check_chars_equal(char* str1, char* str2, int n)
     
 } 
 
-int row_int_from_chars(char* chars)
-{
-    int out = 0;
-    for (int i = 0; i < 3; i++)
-    {
-        if (*(chars+i) != '\0')
-        {
-            out = out*10 + *(chars+i)-'0';
-        }
-    }
-    return out;
-}
+// int row_int_from_chars(char* chars)
+// {
+//     int out = 0;
+//     for (int i = 0; i < 3; i++)
+//     {
+//         if (*(chars+i) != '\0')
+//         {
+//             out = out*10 + *(chars+i)-'0';
+//         }
+//     }
+//     return out;
+// }
 
-int col_int_from_chars(char* chars)
-{
-    int out = 0;
-    for (int i = 0; i < 3; i++)
-    {
-        if (*(chars+i) != '\0')
-        {
-            out = out*26 + *(chars+i)-'A'+1;
-        }
-    }
-    return out;
-}
+// int col_int_from_chars(char* chars)
+// {
+//     int out = 0;
+//     for (int i = 0; i < 3; i++)
+//     {
+//         if (*(chars+i) != '\0')
+//         {
+//             out = out*26 + *(chars+i)-'A'+1;
+//         }
+//     }
+//     return out;
+// }
 
-void col_chars_from_int(int col, char* out)
-{
-    if (col <= 26)
-    {
-        out[2] = '\0';
-        out[1] = '\0';
-        out[0] = 'A' + col - 1;
-    }
-    else if (col <= 702) //26*26 + 26
-    {
-        out[2] = '\0';
-        out[1] = 'A' + col%26 - 1;
-        col/=26;
-        out[0] = 'A' + col - 1;
-    }
-    else if (col <= 18278) //26*26*26 + 26*26 + 26
-    {
-        out[2] = 'A' + col%26 - 1;
-        col/=26;
-        out[1] = 'A' + col%26 - 1;
-        col/=26;
-        out[0] = 'A' + col - 1;
-    }
-    //Wrong input
-}
+// void col_chars_from_int(int col, char* out)
+// {
+//     if (col <= 26)
+//     {
+//         out[2] = '\0';
+//         out[1] = '\0';
+//         out[0] = 'A' + col - 1;
+//     }
+//     else if (col <= 702) //26*26 + 26
+//     {
+//         out[2] = '\0';
+//         out[1] = 'A' + col%26 - 1;
+//         col/=26;
+//         out[0] = 'A' + col - 1;
+//     }
+//     else if (col <= 18278) //26*26*26 + 26*26 + 26
+//     {
+//         out[2] = 'A' + col%26 - 1;
+//         col/=26;
+//         out[1] = 'A' + col%26 - 1;
+//         col/=26;
+//         out[0] = 'A' + col - 1;
+//     }
+//     //Wrong input
+// }
 
 struct parsedInput
 {
@@ -119,11 +119,6 @@ struct parsedInput
 
 };
 
-
-bool in_range(char mid, char lower, char upper) 
-{
-    return (upper >= mid && mid >= lower);
-}
 
 bool is_up_char(char ch)
 {
