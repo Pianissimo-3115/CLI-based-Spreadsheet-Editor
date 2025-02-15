@@ -59,4 +59,9 @@ typedef struct {
     int size;
 } HashTable;
 
+int hash(int key, int size);
+HashTable* create_table(int size);
+void hash_insert(HashTable *ht, Cell *cell);
+Cell* search(HashTable *ht, int col_name);
+void free_table(HashTable *ht);
 #endif
