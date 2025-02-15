@@ -6,13 +6,10 @@
 
 
 bool custom_comparator(Cell* element1, Cell* element2) {
-    if (element1->depth == element2->depth) {
-        if (element1->col_name == element2->col_name) {
-            return element1->row_num < element2->row_num;
-        }
-        return element1->col_name < element2->col_name;
+    if (element1->col_name == element2->col_name) {
+        return element1->row_num < element2->row_num;
     }
-    return element1->depth < element2->depth;
+    return element1->col_name < element2->col_name;
 }
 Node* create_node(Cell* element) {
     Node* node = (Node*)malloc(sizeof(Node));
@@ -162,64 +159,50 @@ Node* erase(Node* root, Cell* element) {
 //     }
 //     inorder_helper(root, arr, 0);
 // }
-ll_Node* inorder(Node* root, LinkedList* merged, ll_Node* head){
+// ll_Node* inorder(Node* root, LinkedList* merged, ll_Node* head){
+//     if(root == NULL) {
+//         return head;
+//     }
+//     // printf("Inorder\n");
+//     head = inorder(root->left, merged, head);
+//     // printf("Afterleft\n");
+//     if(head==NULL){
+//         insertAtEnd(merged, root->element);
+//         head=merged->head;
+//     }
+//     else if(custom_comparator(root->element,head->data)){
+//         merged->head = createNode(root->element);
+//         merged->head->next = head;
+//         head = merged->head;
+//     }
+//     else if(head->next == NULL){
+//         insertAtPosition(head, root->element);
+//         head=head->next;
+//     }
+//     else{
+//         while(head->next!=NULL&&custom_comparator(head->next->data,root->element)){
+//             head=head->next;
+//         }
+//         if(head->next==NULL){
+//             insertAtPosition(head, root->element);
+//         }
+
+//         else if(custom_comparator(root->element,head->next->data)) insertAtPosition(head, root->element);
+//         head=head->next;
+//     }
+//     head = inorder(root->right, merged, head);
+//     return head;
+// }
+void inorder(Node * root, ll_Node* head){
     if(root == NULL) {
-        return head;
+        return;
     }
-    // printf("Inorder\n");
-    head = inorder(root->left, merged, head);
-    // printf("Afterleft\n");
-    if(head==NULL){
-        insertAtEnd(merged, root->element);
-        head=merged->head;
-    }
-    else if(custom_comparator(root->element,head->data)){
-        merged->head = createNode(root->element);
-        merged->head->next = head;
-        head = merged->head;
-    }
-    else if(head->next == NULL){
-        insertAtPosition(head, root->element);
-        head=head->next;
-    }
-    else{
-        while(head->next!=NULL&&custom_comparator(head->next->data,root->element)){
-            head=head->next;
-        }
-        if(head->next==NULL){
-            insertAtPosition(head, root->element);
-        }
-
-        else if(custom_comparator(root->element,head->next->data)) insertAtPosition(head, root->element);
-        head=head->next;
-    }
-    head = inorder(root->right, merged, head);
-    return head;
+    inorder(root->left, head);
+    insertAtHead(head, root->element);
+    inorder(root->right, head);
 }
 
 
-
-void level(Node* root) {
-    if (root == NULL) return;
-
-    Node* queue[1000];
-    int front = 0, rear = 0;
-
-    queue[rear++] = root;
-    queue[rear++] = NULL;
-
-    while (front < rear) {
-        Node* temp = queue[front++];
-        if (temp == NULL) {
-            if (front < rear) queue[rear++] = NULL;
-            printf("\n");
-        } else {
-            printf("%d ", temp->element->value);
-            if (temp->left) queue[rear++] = temp->left;
-            if (temp->right) queue[rear++] = temp->right;
-        }
-    }
-}
 
 // int main() {
 //     AVL avl;

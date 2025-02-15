@@ -2,11 +2,6 @@
 #include <stdlib.h>
 #include "data_structures.h"
 
-typedef struct ll_Node {
-    Cell* data;
-    struct ll_Node* next;
-} ll_Node;
-
 // Function to create a new node
 ll_Node* createNode(Cell* data) {
     ll_Node* newNode = (ll_Node*)malloc(sizeof(ll_Node));
@@ -32,6 +27,13 @@ void insertAtEnd(ll_Node** head, Cell* data) {
         }
         temp->next = newNode;
     }
+}
+
+void insertAtHead(ll_Node** head, Cell* data) {
+    ll_Node* newNode = createNode(data);
+    if (!newNode) return;
+    newNode->next = *head;
+    *head = newNode;
 }
 
 // Function to insert a node after a given position
