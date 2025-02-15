@@ -8,7 +8,7 @@
 typedef struct Node Node;
 typedef struct AVL AVL;
 typedef struct ll_Node ll_Node;
-typedef struct LinkedList LinkedList;
+typedef struct Stack Stack;
 struct Node {
     Cell* element;            
     struct Node* left;
@@ -58,10 +58,23 @@ typedef struct {
     ll_Node **table;
     int size;
 } HashTable;
-
+#define TABLE_SIZE 503
 int hash(int key, int size);
 HashTable* create_table(int size);
 void hash_insert(HashTable *ht, Cell *cell);
 Cell* search(HashTable *ht, int col_name);
 void free_table(HashTable *ht);
+
+// stack structure
+typedef struct Stack {
+    int top;
+    int capacity;
+    Cell* (*array);
+} Stack;
+
+Stack *createStack();
+void push(Stack *stack, Cell* item);
+Cell* pop(Stack *stack);
+int isEmpty(Stack *stack);
+
 #endif

@@ -238,28 +238,69 @@ void update_parent_avls(Cell** data, Cell *cell, int R, int C, Cell_func* old_fu
 
 }
 
-ll_Node* topological_sort(Node* root) {
-    if (root == NULL) return NULL;
-    
+int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stack) {
+    insert(visited, current_cell);
+    insert(recStack, current_cell);
+    ll_Node* temp = NULL;
+    inorder(current_cell->children->root, temp);
+    ll_Node*curr = temp;
+    while (curr) {
+        if (search(visited, curr->data) == NULL) {
+            if (dfs(curr, visited, recStack, stack)) {
+                return 1; 
+            }
+        } 
+        else if (search(recStack, curr->data)) {
+            return 1; 
+        }
+        curr = curr->next; 
+    }
+    // function to be implemented
+    // remove(recStack, current_cell); // Remove node from recursion stack
+    push(stack, current_cell); 
+    while(temp != NULL) {
+        ll_Node* temp2 = temp;
+        temp = temp->next;
+        free(temp2);
+    }
+    return 0;
 }
 
-void update_children(Cell** data, Cell* cell, int R, int C) {
-    // LinkedList merged;
-    // merged.head = NULL;
-    // inorder(cell->children->root, &merged, merged.head);
-    // while(merged.head != NULL) {
-    //     Cell* element=merged.head->data;
-    //     calculate(data,element,R,C);
-    //     // HERE WE HAVE TO CALL UPDATE_DEPTH
-    //     // BUT I DIDN'T DO IT BECAUSE PROBABLY WE CAN MAKE IT MORE OPTIMIZED BY NOT USING UPDATE_DEPTH
-    //     // ALSO, EK AUR KAAM BAKI HAI, LOOP DETECTION
-    //     ll_Node* temp=merged.head;
-    //     merged.head=merged.head->next;
-    //     free(temp);
-    //     inorder(element->children->root, &merged, merged.head);
-    // }
+ll_Node* topologicalSort(Cell* current_cell){
+    HashTable* visited = create_table(TABLE_SIZE);
+    HashTable* recStack = create_table(TABLE_SIZE);
+    Stack *stack = createStack();
+    ll_Node* head = NULL;
+    ll_Node* temp = NULL;
+    inorder(current_cell->children->root, temp);
+
+    while(temp != NULL){
+        if(search(visited, temp->data) == NULL){
+            if (dfs(temp->data, visited, recStack, stack)) {
+                free(stack->array);
+                free(stack);
+                return NULL;
+            }
+        }
+        temp = temp->next;
+    }
+
+    while(!isEmpty(stack)) {
+        insertAtHead(&head,pop(stack));
+    }
+    insertAtHead(&head, current_cell);
+    free(stack->array);
+    free(stack);
+    free(temp);
+    free(visited->table);
+    free(recStack->table);
+    return head;
+}
+
+int update_children(Cell** data, Cell* cell, int R, int C) {
     ll_Node* head = NULL;
     head = topological_sort(cell->children->root);
+    if(head == NULL) return 0;
     while (head != NULL) {
         Cell* element = head->data;
         calculate(data, element, R, C);
@@ -267,19 +308,19 @@ void update_children(Cell** data, Cell* cell, int R, int C) {
         head = head->next;
         free(temp);
     }
+    return 1;
 }
 
 
-void evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) { 
+int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) { 
     int initial_value=cell->value;
     remove_old_dependencies(data, old_func, cell, R, C);
-    calculate(data, cell, R, C);
+    // calculate(data, cell, R, C);
     // update_depth(data, cell, R, C);
     update_parent_avls(data,cell,R,C,old_func);
-    // if (cell->value != initial_value) {
-    update_children(data, cell, R, C);            ///////////////////// TO BE IMPLEMENTED
-    // }
-    return;
+
+    // this func would take care of updating the children of the cell and also detect cycle if any
+    return update_children(data, cell, R, C); 
 }
 
 // int main(){
