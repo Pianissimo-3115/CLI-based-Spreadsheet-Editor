@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include "data_structures.h"
 
+typedef struct ll_Node {
+    Cell* data;
+    struct ll_Node* next;
+} ll_Node;
+
 // Function to create a new node
 ll_Node* createNode(Cell* data) {
     ll_Node* newNode = (ll_Node*)malloc(sizeof(ll_Node));
@@ -14,14 +19,14 @@ ll_Node* createNode(Cell* data) {
 }
 
 // Function to insert a node at the end of the linked list
-void insertAtEnd(LinkedList* list, Cell* data) {
+void insertAtEnd(ll_Node** head, Cell* data) {
     ll_Node* newNode = createNode(data);
     if (!newNode) return;
-
-    if (list->head == NULL) {
-        list->head = newNode;
-    } else {
-        ll_Node* temp = list->head;
+    if (*head == NULL) {
+        *head = newNode;  
+    } 
+    else {
+        ll_Node* temp = *head;
         while (temp->next != NULL) {
             temp = temp->next;
         }
@@ -29,7 +34,7 @@ void insertAtEnd(LinkedList* list, Cell* data) {
     }
 }
 
-// Function to insert a node at a given position
+// Function to insert a node after a given position
 void insertAtPosition(ll_Node* position, Cell* data) {
     if (position == NULL) {
         return;
@@ -39,13 +44,11 @@ void insertAtPosition(ll_Node* position, Cell* data) {
 
     newNode->next = position->next;
     position->next = newNode;
-
 }
 
-
-// Function to free the memory of the linked list
-void freeLinkedList(LinkedList* list) {
-    ll_Node* current = list->head;
+// Function to free the linked list
+void freeLinkedList(ll_Node** head) {
+    ll_Node* current = *head;
     ll_Node* nextNode;
 
     while (current != NULL) {
@@ -53,23 +56,39 @@ void freeLinkedList(LinkedList* list) {
         free(current);
         current = nextNode;
     }
+    *head = NULL; // Set head to NULL
+}
 
-    list->head = NULL;
+// Function to print the linked list
+void printLinkedList(ll_Node* head) {
+    ll_Node* temp = head;
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
 }
 
 // int main() {
-//     LinkedList list;
-//     list.head = NULL;
+//     ll_Node* head = NULL;
 
-//     insertAtEnd(&list, 10);
-//     insertAtEnd(&list, 20);
-//     insertAtEnd(&list, 30);
+//     insertAtEnd(&head, 10);
+//     insertAtEnd(&head, 20);
+//     insertAtEnd(&head, 30);
 
-//     ll_Node* position = list.head->next; // Insert after the first node
-//     insertAtPosition(position, 25);
+//     printf("Before inserting at position:\n");
+//     printLinkedList(head);
+
+//     // Insert after the first node
+//     if (head != NULL) {
+//         insertAtPosition(head, 25);
+//     }
+
+//     printf("After inserting at position:\n");
+//     printLinkedList(head);
 
 //     // Free the memory
-//     freeLinkedList(&list);
+//     freeLinkedList(&head);
 
 //     return 0;
 // }

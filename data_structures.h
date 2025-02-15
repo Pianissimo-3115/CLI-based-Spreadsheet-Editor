@@ -45,9 +45,9 @@ struct ll_Node {
 };
 
 // Define the linked list structure
-struct LinkedList {
-    ll_Node* head;
-};
+// struct LinkedList {
+//     ll_Node* head;
+// };
 
 ll_Node* createNode(Cell* data);
 void insertAtEnd(LinkedList* list, Cell* data);

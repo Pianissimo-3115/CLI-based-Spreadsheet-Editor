@@ -26,7 +26,7 @@ struct Cell {
     int valid;                      
     Cell_func *func;
     AVL* children;
-    int depth;
+    short int run_cnt;
 };
 
 struct Cell_func {
