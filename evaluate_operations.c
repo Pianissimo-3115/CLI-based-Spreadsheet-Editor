@@ -88,7 +88,7 @@ void sleep(int seconds) {
 
 
 
-void update_depth(Cell** data, Cell* cell, int R, int C){
+void  update_depth(Cell** data, Cell* cell, int R, int C){
     int old_depth=cell->depth;
     Cell_func* func=cell->func;
     if(func->op>5) {            // is a range function
@@ -149,6 +149,7 @@ void calculate(Cell** data, Cell* cell, int R, int C) {
         case FIX: {cell->value = val1; break;}
         case ADD: {
             cell->value = val1 + val2;
+
             // if(func->flag1) func->Cell1->children->root = insert(func->Cell1->children->root, cell);
             // if(func->flag2) func->Cell2->children->root = insert(func->Cell2->children->root, cell);
             break;
@@ -187,22 +188,35 @@ void calculate(Cell** data, Cell* cell, int R, int C) {
         case AVG:{ cell->value = avg_eval(data, cell, func, R, C); break;}
     }
 }
-void update_parent_avls(Cell** data, Cell *cell, int R, int C){
+void update_parent_avls(Cell** data, Cell *cell, int R, int C, Cell_func* old_func){
     Cell_func* func=cell->func;
+    bool was_range_func;
+    if(old_func->op>5) was_range_func=true;
+    else was_range_func=false;
     if(func->op>5) {          // is a range function
         Cell* cell1=func->Cell1;
         Cell* cell2=func->Cell2;
         for(int col=cell1->col_name; col<=cell2->col_name; col++){
             for(int row=cell1->row_num; row<=cell2->row_num; row++){
+                if(was_range_func && old_func->Cell1->col_name<=col && old_func->Cell2->col_name>=col && old_func->Cell1->row_num<=row && old_func->Cell2->row_num>=row) continue;
+                if(!was_range_func && old_func->flag1 && old_func->Cell1->col_name==col && old_func->Cell1->row_num==row) continue;
+                if(!was_range_func && old_func->flag2 && old_func->Cell2->col_name==col && old_func->Cell2->row_num==row) continue;
                 (*(data + C*row + col -1))->children->root=insert((*(data + C*row + col -1))->children->root,cell);
             }
         }
     }
     else{
         if(func->flag1) {
+            if(was_range_func && old_func->Cell1->col_name<=func->Cell1->col_name && old_func->Cell2->col_name>=func->Cell1->col_name && old_func->Cell1->row_num<=func->Cell1->row_num && old_func->Cell2->row_num>=func->Cell1->row_num) goto skip;
+            if(!was_range_func && old_func->flag1 && old_func->Cell1->col_name==func->Cell1->col_name && old_func->Cell1->row_num==func->Cell1->row_num) goto skip;
+            if(!was_range_func && old_func->flag2 && old_func->Cell2->col_name==func->Cell1->col_name && old_func->Cell2->row_num==func->Cell1->row_num) goto skip;
             func->Cell1->children->root=insert(func->Cell1->children->root,cell);
         }
+        skip:
         if(func->flag2) {
+            if(was_range_func && old_func->Cell1->col_name<=func->Cell2->col_name && old_func->Cell2->col_name>=func->Cell2->col_name && old_func->Cell1->row_num<=func->Cell2->row_num && old_func->Cell2->row_num>=func->Cell2->row_num) return;
+            if(!was_range_func && old_func->flag1 && old_func->Cell1->col_name==func->Cell2->col_name && old_func->Cell1->row_num==func->Cell2->row_num) return;
+            if(!was_range_func && old_func->flag2 && old_func->Cell2->col_name==func->Cell2->col_name && old_func->Cell2->row_num==func->Cell2->row_num) return;
             func->Cell2->children->root=insert(func->Cell2->children->root,cell);
         }
     }
@@ -232,7 +246,7 @@ void evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) {
     remove_old_dependencies(data, old_func, cell, R, C);
     calculate(data, cell, R, C);
     update_depth(data, cell, R, C);
-    update_parent_avls(data,cell,R,C);
+    update_parent_avls(data,cell,R,C,old_func);
     if (cell->value != initial_value) {
         update_children(data, cell, R, C);            ///////////////////// TO BE IMPLEMENTED
     }
