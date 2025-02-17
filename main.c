@@ -24,7 +24,10 @@ int main()
     bool quit = false;
 
     unsigned int R, C;
-    scanf("%u %u", &R, &C);
+    char dummy;
+    scanf("%u", &R);
+    scanf("%u", &C);
+    scanf("%c", &dummy);
 
     Cell** data = (Cell**) calloc(R*C, sizeof(Cell*));
 
@@ -47,8 +50,11 @@ int main()
         }
         
         
-
         char inp[30] = "";
+        // fgets(inp, 30, stdin);
+        // printf("\nInput#%s#end\n", inp);
+
+
         int i = 0;
         int c;
         while ((c = getchar()) != -1 && c != '\n' && i < 30) // -1 is End Of File (EOF)
