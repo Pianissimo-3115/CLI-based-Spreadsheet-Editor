@@ -4,13 +4,8 @@
 
 #define TABLE_SIZE 503
 
-typedef struct {
-    ll_Node **table;
-    int size;
-} HashTable;
-
-int hash(int key, int size) {
-    return key % size;
+int hash(Cell* cell, int size) {
+    return (cell->col_name+cell->row_num)%size;
 }
 
 HashTable* create_table(int size) {
@@ -35,14 +30,11 @@ HashTable* create_table(int size) {
 void hash_insert(HashTable *ht, Cell *cell) {
     if (!ht || !cell)
         return;
-    int index = hash(cell->col_name, ht->size);
+    int index = hash(cell, ht->size);
     ll_Node *current = ht->table[index];
     
     while (current != NULL) {
-        if (current->data->col_name == cell->col_name) {
-            current->data->row_num = cell->row_num;
-            current->data->value   = cell->value;
-            current->data->valid   = cell->valid;
+        if (current->data == cell) {
             return;
         }
         current = current->next;
@@ -51,18 +43,39 @@ void hash_insert(HashTable *ht, Cell *cell) {
     insertAtEnd((ht->table+index), cell);
 }
 
-Cell* search(HashTable *ht, int col_name) {
+void hash_remove(HashTable *ht, Cell *cell) {
+    if (!ht || !cell)
+        return;
+    int index = hash(cell, ht->size);
+    ll_Node *current = ht->table[index];
+    ll_Node *prev = NULL;
+
+    while (current != NULL) {
+        if (current->data == cell) {
+            if (prev == NULL) {
+                ht->table[index] = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            free(current);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
+}
+int search(HashTable *ht, Cell* cell) {
     if (!ht)
-        return NULL;
-    int index = hash(col_name, ht->size);
+        return 0;
+    int index = hash(cell, ht->size);
     ll_Node *current = ht->table[index];
     while (current != NULL) {
-        if (current->data->col_name == col_name) {
-            return current->data;
+        if (current->data==cell) {
+            return 1;
         }
         current = current->next;
     }
-    return NULL;
+    return 0;
 }
 
 void free_table(HashTable *ht) {
@@ -71,54 +84,28 @@ void free_table(HashTable *ht) {
     for (int i = 0; i < ht->size; i++) {
         freeLinkedList(((ht->table)+i));
     }
-    free(ht->table);
     free(ht);
 }
 
-#ifndef TEST_HASH_TABLE
 int main() {
     HashTable *ht = create_table(TABLE_SIZE);
 
-    Cell *cell1 = malloc(sizeof(Cell));
-    cell1->col_name = 10;
-    cell1->row_num  = 1;
-    cell1->value    = 100;
-    cell1->valid    = 1;
-    cell1->func     = NULL;
-    cell1->children = NULL;
-    cell1->run_cnt  = 0;
+    Cell cell1 = { .col_name = 1, .row_num = 1 };
+    Cell cell2 = { .col_name = 2, .row_num = 2 };
+    Cell cell3 = { .col_name = 3, .row_num = 3 };
 
-    Cell *cell2 = malloc(sizeof(Cell));
-    cell2->col_name = 21;
-    cell2->row_num  = 2;
-    cell2->value    = 200;
-    cell2->valid    = 1;
-    cell2->func     = NULL;
-    cell2->children = NULL;
-    cell2->run_cnt  = 0;
+    hash_insert(ht, &cell1);
+    hash_insert(ht, &cell2);
+    hash_insert(ht, &cell3);
 
-    Cell *cell3 = malloc(sizeof(Cell));
-    cell3->col_name = 32;
-    cell3->row_num  = 3;
-    cell3->value    = 300;
-    cell3->valid    = 1;
-    cell3->func     = NULL;
-    cell3->children = NULL;
-    cell3->run_cnt  = 0;
+    printf("Search cell1: %d\n", search(ht, &cell1));
+    printf("Search cell2: %d\n", search(ht, &cell2));
+    printf("Search cell3: %d\n", search(ht, &cell3));
 
-    hash_insert(ht, cell1);
-    hash_insert(ht, cell2);
-    hash_insert(ht, cell3);
-
-    Cell* found = search(ht, 21);
-    if (found) {
-        printf("Found cell: col_name = %d, row_num = %d, value = %d\n",
-               found->col_name, found->row_num, found->value);
-    } else {
-        printf("Cell with col_name 21 not found.\n");
-    }
+    hash_remove(ht, &cell2);
+    printf("Search cell2 after removal: %d\n", search(ht, &cell2));
 
     free_table(ht);
+
     return 0;
 }
-#endif

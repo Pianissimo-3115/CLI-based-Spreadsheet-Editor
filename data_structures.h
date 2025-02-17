@@ -59,10 +59,11 @@ typedef struct {
     int size;
 } HashTable;
 #define TABLE_SIZE 503
-int hash(int key, int size);
+int hash(Cell* cell, int size);
 HashTable* create_table(int size);
 void hash_insert(HashTable *ht, Cell *cell);
-Cell* search(HashTable *ht, int col_name);
+void hash_remove(HashTable *ht, Cell *cell);
+int search(HashTable *ht, Cell* cell);
 void free_table(HashTable *ht);
 
 // stack structure
