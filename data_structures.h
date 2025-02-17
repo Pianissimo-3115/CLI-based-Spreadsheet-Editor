@@ -50,10 +50,11 @@ typedef struct ll_Node {
 // };
 
 ll_Node* createNode(Cell* data);
-void insertAtEnd(ll_Node** head, Cell* data);
-void insertAtHead(ll_Node** head, Cell* data);
+void insertAtEnd(ll_Node* head, Cell* data);
+void insertAtHead(ll_Node* head, Cell* data);
 void insertAtPosition(ll_Node* position, Cell* data);
-void freeLinkedList(ll_Node** head);
+void freeLinkedList(ll_Node* head);
+void printLinkedList(ll_Node* head);
 
 typedef struct {
     ll_Node **table;
@@ -64,7 +65,7 @@ int hash(Cell* cell, int size);
 HashTable* create_table(int size);
 void hash_insert(HashTable *ht, Cell *cell);
 void hash_remove(HashTable *ht, Cell *cell);
-int search(HashTable *ht, Cell* cell);
+int hash_search(HashTable *ht, Cell* cell);
 void free_table(HashTable *ht);
 
 // stack structure

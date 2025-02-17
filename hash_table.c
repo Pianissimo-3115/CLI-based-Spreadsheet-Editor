@@ -15,7 +15,7 @@ HashTable* create_table(int size) {
         exit(EXIT_FAILURE);
     }
     ht->size = size;
-    ht->table = malloc(sizeof(ll_Node*) * size);
+    ht->table = (ll_Node**)malloc(sizeof(ll_Node*) * size);
     if (!ht->table) {
         perror("Failed to allocate table buckets");
         free(ht);
@@ -64,7 +64,7 @@ void hash_remove(HashTable *ht, Cell *cell) {
         current = current->next;
     }
 }
-int search(HashTable *ht, Cell* cell) {
+int hash_search(HashTable *ht, Cell* cell) {
     if (!ht)
         return 0;
     int index = hash(cell, ht->size);
@@ -82,11 +82,11 @@ void free_table(HashTable *ht) {
     if (!ht)
         return;
     for (int i = 0; i < ht->size; i++) {
-        freeLinkedList(((ht->table)+i));
+        freeLinkedList(*((ht->table)+i));
     }
     free(ht);
 }
-
+#ifndef MAIN
 int main() {
     HashTable *ht = create_table(TABLE_SIZE);
 
@@ -109,3 +109,4 @@ int main() {
 
     return 0;
 }
+#endif

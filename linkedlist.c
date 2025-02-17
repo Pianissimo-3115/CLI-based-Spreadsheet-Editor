@@ -14,14 +14,14 @@ ll_Node* createNode(Cell* data) {
 }
 
 // Function to insert a node at the end of the linked list
-void insertAtEnd(ll_Node** head, Cell* data) {
+void insertAtEnd(ll_Node* head, Cell* data) {
     ll_Node* newNode = createNode(data);
     if (!newNode) return;
-    if (*head == NULL) {
-        *head = newNode;  
+    if (head == NULL) {
+        head = newNode;  
     } 
     else {
-        ll_Node* temp = *head;
+        ll_Node* temp = head;
         while (temp->next != NULL) {
             temp = temp->next;
         }
@@ -29,11 +29,11 @@ void insertAtEnd(ll_Node** head, Cell* data) {
     }
 }
 
-void insertAtHead(ll_Node** head, Cell* data) {
+void insertAtHead(ll_Node* head, Cell* data) {
     ll_Node* newNode = createNode(data);
     if (!newNode) return;
-    newNode->next = *head;
-    *head = newNode;
+    newNode->next = head;
+    head = newNode;
 }
 
 // Function to insert a node after a given position
@@ -49,8 +49,8 @@ void insertAtPosition(ll_Node* position, Cell* data) {
 }
 
 // Function to free the linked list
-void freeLinkedList(ll_Node** head) {
-    ll_Node* current = *head;
+void freeLinkedList(ll_Node* head) {
+    ll_Node* current = head;
     ll_Node* nextNode;
 
     while (current != NULL) {
@@ -58,7 +58,7 @@ void freeLinkedList(ll_Node** head) {
         free(current);
         current = nextNode;
     }
-    *head = NULL; // Set head to NULL
+    head = NULL; // Set head to NULL
 }
 
 // Function to print the linked list
@@ -70,27 +70,28 @@ void printLinkedList(ll_Node* head) {
     }
     printf("NULL\n");
 }
+#ifndef MAIN
+int main() {
+    ll_Node* head = NULL;
 
-// int main() {
-//     ll_Node* head = NULL;
+    insertAtEnd(head, 10);
+    insertAtEnd(head, 20);
+    insertAtEnd(head, 30);
 
-//     insertAtEnd(&head, 10);
-//     insertAtEnd(&head, 20);
-//     insertAtEnd(&head, 30);
+    printf("Before inserting at position:\n");
+    printLinkedList(head);
 
-//     printf("Before inserting at position:\n");
-//     printLinkedList(head);
+    // Insert after the first node
+    if (head != NULL) {
+        insertAtPosition(head, 25);
+    }
 
-//     // Insert after the first node
-//     if (head != NULL) {
-//         insertAtPosition(head, 25);
-//     }
+    printf("After inserting at position:\n");
+    printLinkedList(head);
 
-//     printf("After inserting at position:\n");
-//     printLinkedList(head);
+    // Free the memory
+    freeLinkedList(head);
 
-//     // Free the memory
-//     freeLinkedList(&head);
-
-//     return 0;
-// }
+    return 0;
+}
+#endif

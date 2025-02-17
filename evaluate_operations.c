@@ -235,28 +235,27 @@ void update_parent_avls(Cell** data, Cell *cell, int R, int C, Cell_func* old_fu
             func->Cell2->children->root=insert(func->Cell2->children->root,cell);
         }
     }
-
 }
 
 int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stack) {
-    insert(visited, current_cell);
-    insert(recStack, current_cell);
+    hash_insert(visited, current_cell);
+    hash_insert(recStack, current_cell);
     ll_Node* temp = NULL;
     inorder(current_cell->children->root, temp);
     ll_Node*curr = temp;
     while (curr) {
-        if (search(visited, curr->data) == NULL) {
-            if (dfs(curr, visited, recStack, stack)) {
+        if (!hash_search(visited, curr->data)) {
+            if (dfs(curr->data, visited, recStack, stack)) {
                 return 1; 
             }
         } 
-        else if (search(recStack, curr->data)) {
+        else if (hash_search(recStack, curr->data)) {
             return 1; 
         }
         curr = curr->next; 
     }
     // function to be implemented
-    // remove(recStack, current_cell); // Remove node from recursion stack
+    hash_remove(recStack, current_cell); // Remove node from recursion stack
     push(stack, current_cell); 
     while(temp != NULL) {
         ll_Node* temp2 = temp;
@@ -266,7 +265,7 @@ int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stac
     return 0;
 }
 
-ll_Node* topologicalSort(Cell* current_cell){
+ll_Node* topological_sort(Cell* current_cell){
     HashTable* visited = create_table(TABLE_SIZE);
     HashTable* recStack = create_table(TABLE_SIZE);
     Stack *stack = createStack();
@@ -275,7 +274,7 @@ ll_Node* topologicalSort(Cell* current_cell){
     inorder(current_cell->children->root, temp);
 
     while(temp != NULL){
-        if(search(visited, temp->data) == NULL){
+        if(!hash_search(visited, temp->data)){
             if (dfs(temp->data, visited, recStack, stack)) {
                 free(stack);
                 return NULL;
@@ -285,19 +284,18 @@ ll_Node* topologicalSort(Cell* current_cell){
     }
 
     while(!isEmpty(stack)) {
-        insertAtHead(&head,pop(stack));
+        insertAtHead(head,pop(stack));
     }
-    insertAtHead(&head, current_cell);
-    free(stack);
-    free(temp);
-    free(visited->table);
-    free(recStack->table);
+    insertAtHead(head, current_cell);
+    freeStack(stack);
+    freeLinkedList(temp);
+    free_table(visited);
+    free_table(recStack);
     return head;
 }
 
 int update_children(Cell** data, Cell* cell, int R, int C) {
-    ll_Node* head = NULL;
-    head = topological_sort(cell->children->root);
+    ll_Node* head = topological_sort(cell);
     if(head == NULL) return 0;
     while (head != NULL) {
         Cell* element = head->data;
@@ -311,84 +309,93 @@ int update_children(Cell** data, Cell* cell, int R, int C) {
 
 
 int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) { 
-    int initial_value=cell->value;
-    remove_old_dependencies(data, old_func, cell, R, C);
-    // calculate(data, cell, R, C);
-    // update_depth(data, cell, R, C);
-    update_parent_avls(data,cell,R,C,old_func);
+    // int initial_value=cell->value;
+    if(old_func!=NULL){
+        remove_old_dependencies(data, old_func, cell, R, C);
+        update_parent_avls(data,cell,R,C,old_func);
+    }
 
     // this func would take care of updating the children of the cell and also detect cycle if any
     return update_children(data, cell, R, C); 
 }
+#ifndef MAIN
+int main(){
+    Cell** data = (Cell**)malloc(5 * sizeof(Cell*));
+    for (int i = 0; i < 5; i++) {
+        data[i] = (Cell*)malloc(5 * sizeof(Cell));
+        for (int j = 0; j < 5; j++) {
+            data[i][j].value = i * 5 + j;
+            data[i][j].col_name = j + 1;
+            data[i][j].row_num = i + 1;
+            data[i][j].valid = 1;
+            data[i][j].func = NULL;
+            data[i][j].children = (AVL*)malloc(sizeof(AVL));
+            data[i][j].children->root = NULL;
+        }
+    }
+    Cell_func* func = (Cell_func*)malloc(sizeof(Cell_func));
+    func->op = ADD;
+    func->flag1 = 1;
+    func->flag2 = 1;
+    func->Cell1 = &data[0][1];
+    func->Cell2 = &data[1][0];
+    data[0][0].func = func;     // A1 = B1 + A2
+    evaluate(data, &data[0][0], NULL, 5, 5);
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("%d ", data[i][j].value);
+        }
+        printf("\n");
+    }
 
-// int main(){
-//     Cell cell1 = { .value = 0, .col_name = 1, .row_num = 1, .valid = 1, .func = NULL, .children = NULL, .depth = 0};
-//     Cell cell2 = { .value = 1, .col_name = 2, .row_num = 1, .valid = 1, .func = NULL, .children = NULL, .depth = 1};
-//     Cell cell3 = { .value = 2, .col_name = 1, .row_num = 2, .valid = 1, .func = NULL, .children = NULL, .depth = 2};
-//     Cell cell4 = { .value = 3, .col_name = 2, .row_num = 2, .valid = 1, .func = NULL, .children = NULL, .depth = 3};
-//     Cell cell5 = { .value = 4, .col_name = 3, .row_num = 3, .valid = 1, .func = NULL, .children = NULL, .depth = 4};
-//     Cell cell6 = { .value = 5, .col_name = 4, .row_num = 4, .valid = 1, .func = NULL, .children = NULL, .depth = 5};
-//     cell1.children = (AVL*)malloc(sizeof(AVL));
-//     cell1.children->root = NULL;
-//     cell1.children->root = insert(cell1.children->root, &cell2);
-//     cell1.children->root = insert(cell1.children->root, &cell3);
-//     cell1.children->root = insert(cell1.children->root, &cell4);
-//     cell1.children->root = insert(cell1.children->root, &cell5);
-//     cell1.children->root = insert(cell1.children->root, &cell6);
-//     cell2.children = (AVL*)malloc(sizeof(AVL));
-//     cell2.children->root = NULL;
-//     cell2.children->root = insert(cell2.children->root, &cell3);
-//     cell2.children->root = insert(cell2.children->root, &cell4);
-//     cell2.children->root = insert(cell2.children->root, &cell5);
-//     cell2.children->root = insert(cell2.children->root, &cell6);
-//     cell3.children = (AVL*)malloc(sizeof(AVL));
-//     cell3.children->root = NULL;
-//     cell3.children->root = insert(cell3.children->root, &cell4);
-//     cell3.children->root = insert(cell3.children->root, &cell5);
-//     cell3.children->root = insert(cell3.children->root, &cell6);
-//     cell4.children = (AVL*)malloc(sizeof(AVL));
-//     cell4.children->root = NULL;
-//     cell4.children->root = insert(cell4.children->root, &cell5);
-//     cell4.children->root = insert(cell4.children->root, &cell6);
-//     cell5.children = (AVL*)malloc(sizeof(AVL));
-//     cell5.children->root = NULL;
-//     cell5.children->root = insert(cell5.children->root, &cell6);
-//     LinkedList merged;
-//     merged.head = NULL;
-//     inorder(cell5.children->root, &merged, merged.head);
-//     ll_Node* temp = merged.head;
-//     while (temp != NULL) {
-//         printf("%d ", temp->data->value);
-//         temp = temp->next;
-//     }
-//     printf("\n");
-//     inorder(cell4.children->root, &merged, merged.head);
-//     temp = merged.head;
-//     while (temp != NULL) {
-//         printf("%d ", temp->data->value);
-//         temp = temp->next;
-//     }
-//     printf("\n");
-//     inorder(cell3.children->root, &merged, merged.head);
-//     temp = merged.head;
-//     while (temp != NULL) {
-//         printf("%d ", temp->data->value);
-//         temp = temp->next;
-//     }
-//     printf("\n");
-//     inorder(cell2.children->root, &merged, merged.head);
-//     temp = merged.head;
-//     while (temp != NULL) {
-//         printf("%d ", temp->data->value);
-//         temp = temp->next;
-//     }
-//     printf("\n");
-//     inorder(cell1.children->root, &merged, merged.head);
-//     temp = merged.head;
-//     while (temp != NULL) {
-//         printf("%d ", temp->data->value);
-//         temp = temp->next;
-//     }
-//     printf("\n");
-//     printf("Done\n");
-// }
+    Cell_func* func2 = (Cell_func*)malloc(sizeof(Cell_func));
+    func2->op = ADD;
+    func2->flag1 = 1;
+    func2->flag2 = 1;
+    func2->Cell1 = &data[0][0];
+    func2->Cell2 = &data[1][1];
+    data[1][0].func = func2;     // B1 = A1 + B2
+    evaluate(data, &data[0][0], func, 5, 5);
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("%d ", data[i][j].value);
+        }
+        printf("\n");
+    }
+
+    Cell_func* func3 = (Cell_func*)malloc(sizeof(Cell_func));
+    func3->op = ADD;
+    func3->flag1 = 1;
+    func3->flag2 = 1;
+    func3->Cell1 = &data[0][2];
+    func3->Cell2 = &data[1][2];
+    data[1][1].func = func3;     // B2 = A2 + B3
+    evaluate(data, &data[0][0], func2, 5, 5);
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("%d ", data[i][j].value);
+        }
+        printf("\n");
+    }
+
+    Cell_func* func4 = (Cell_func*)malloc(sizeof(Cell_func));
+    func4->op = ADD;
+    func4->flag1 = 1;
+    func4->flag2 = 1;
+    func4->Cell1 = &data[0][3];
+    func4->Cell2 = &data[1][3];
+    data[1][2].func = func4;     // B3 = A3 + B4
+    evaluate(data, &data[0][0], func3, 5, 5);
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("%d ", data[i][j].value);
+        }
+        printf("\n");
+    }
+
+
+
+    printf("\n");
+    printf("Done\n");
+}
+#endif

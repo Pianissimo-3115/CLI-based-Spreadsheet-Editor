@@ -242,7 +242,7 @@ void inorder(Node * root, ll_Node* head){
 //     Cell* arr[100] = {NULL};
 //     inorder(avl.root, arr);
     
-//     for (int i = 0; i < count; i++) {
+//     for (int i = 0; i < 100; i++) {
 //         if(arr[i] != NULL) {
 //             printf("%d ", arr[i]->value);
 //         }
