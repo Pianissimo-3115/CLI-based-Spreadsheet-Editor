@@ -1,7 +1,8 @@
 #include<stdlib.h>
 #include<stdio.h>
 // #include<stdbool.h>
-#include"cell_operations.h"
+#include"data_structures.h"
+
 // void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
 /*
 Create Data Structure
@@ -111,6 +112,89 @@ int main()
                 displayR = parse.val1Row;
                 break;
             }
+            break;
+            case Assignment:
+                Cell* target = *(data + C*(parse.targetRow-1) + parse.targetCol - 1);
+                Cell_func* old_func = NULL;
+                Cell_func* new_func = NULL;
+                if (target == NULL)
+                {
+                    target = (Cell*)  malloc(sizeof(Cell));
+                    *(data + C*(parse.targetRow-1) + parse.targetCol - 1) = target;
+
+                    target -> col_name = parse.targetCol;
+                    target -> row_num = parse.targetRow;
+                    target -> value = 0;
+                    target -> valid = true;
+                    target -> children = (AVL* ) malloc(sizeof(AVL));
+                    target -> children -> root = NULL;
+                    //target -> run_cnt = 0;
+                }
+                else
+                {
+                    old_func = target -> func;
+                }
+                
+                new_func = malloc(sizeof(Cell_func));
+                new_func -> op = parse.operation;
+
+                if (parse.val1Type == 0)
+                {
+                    new_func -> flag1 = 0;
+                    new_func -> value1 = parse.val1Int;
+                }
+                else
+                {
+                    new_func -> flag1 = 1;
+                    Cell* val1 = *(data + C*(parse.val1Row-1) + parse.val1Col - 1);
+                    if (val1 == NULL)
+                    {
+                        //Initialise val1
+    
+                        val1 = (Cell*)  malloc(sizeof(Cell));
+                        *(data + C*(parse.val1Row-1) + parse.val1Col - 1) = val1;
+                        val1 -> col_name = parse.val1Col;
+                        val1 -> row_num = parse.val1Row;
+                        val1 -> value = 0;
+                        val1 -> valid = true;
+                        val1 -> children = (AVL* ) malloc(sizeof(AVL));
+                        val1 -> children -> root = NULL;
+                        Cell_func* val1_func = NULL;
+                    }
+                    new_func -> Cell1 = val1;
+                }
+
+                if (parse.val2Type == 0)
+                {
+                    new_func -> flag2 = 0;
+                    new_func -> value2 = parse.val2Int;
+                }
+                else
+                {
+                    new_func -> flag2 = 1;
+                    Cell* val2 = *(data + C*(parse.val2Row-1) + parse.val2Col - 1);
+                    if (val2 == NULL)
+                    {
+                        //Initialise val2
+    
+                        val2 = (Cell*)  malloc(sizeof(Cell));
+                        *(data + C*(parse.val2Row-1) + parse.val2Col - 1) = val2;
+                        val2 -> col_name = parse.val2Col;
+                        val2 -> row_num = parse.val2Row;
+                        val2 -> value = 0;
+                        val2 -> valid = true;
+                        val2 -> children = (AVL* ) malloc(sizeof(AVL));
+                        val2 -> children -> root = NULL;
+                        Cell_func* val2_func = NULL;
+                    }
+                    new_func -> Cell2 = val2;
+                }
+
+                evaluate(data, target, old_func, R, C);
+                target -> func = new_func;
+    
+
+
             break;
             default:
                 break;

@@ -693,7 +693,14 @@ void display_window(Cell** data, int currR, int currC, int R, int C)
             }
             else
             {
-                printf("%10d", (**(data + C*(i-1) + j - 1)).value);
+                Cell cell = **(data + C*(i-1) + j - 1);
+                if (cell.valid)
+                {
+                    printf("%10d", cell.value);
+                }
+                else {
+                    printf("       ERR");
+                }
             }
         }
         printf("\n");
