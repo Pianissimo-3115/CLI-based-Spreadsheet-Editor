@@ -40,7 +40,7 @@ void hash_insert(HashTable *ht, Cell *cell) {
         current = current->next;
     }
     
-    insertAtEnd((ht->table+index), cell);
+    insertAtPosition(current, cell);
 }
 
 void hash_remove(HashTable *ht, Cell *cell) {

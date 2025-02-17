@@ -8,3 +8,4 @@ vc140.pdb
 *.ilk
 *.obj
 *.pdb
+*.o
