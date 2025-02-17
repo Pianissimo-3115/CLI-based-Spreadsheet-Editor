@@ -1,3 +1,7 @@
+//gcc -g main.c linkedlist.c AVL.c stack.c hash_table.c evaluate_operations.c IO.c -o sheet.exe
+// gdb sheet.exe
+
+
 #include<stdlib.h>
 #include<stdio.h>
 // #include<stdbool.h>
@@ -160,6 +164,7 @@ int main()
                         val1 -> children = (AVL* ) malloc(sizeof(AVL));
                         val1 -> children -> root = NULL;
                         Cell_func* val1_func = NULL;
+                        val1->func = val1_func;
                     }
                     new_func -> Cell1 = val1;
                 }
@@ -186,12 +191,13 @@ int main()
                         val2 -> children = (AVL* ) malloc(sizeof(AVL));
                         val2 -> children -> root = NULL;
                         Cell_func* val2_func = NULL;
+                        val2->func = val2_func;
                     }
                     new_func -> Cell2 = val2;
                 }
 
-                int x=evaluate(data, target, old_func, R, C);
                 target -> func = new_func;
+                int x=evaluate(data, target, old_func, R, C);
     
 
 

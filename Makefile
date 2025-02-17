@@ -29,6 +29,8 @@ sheet: $(OBJ)
 run: sheet
 	./sheet $(a) $(b)
 
+debug:
+	gcc -g main.c linkedlist.c AVL.c stack.c hash_table.c evaluate_operations.c IO.c -o sheet.exe
+	gdb sheet.exe
 clean:
-	rm $(@D)/*.o
-	rm $(@D)/sheet.exe
+	rm ./sheet.exe

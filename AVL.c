@@ -193,12 +193,12 @@ Node* erase(Node* root, Cell* element) {
 //     head = inorder(root->right, merged, head);
 //     return head;
 // }
-void inorder(Node * root, ll_Node* head){
+void inorder(Node * root, ll_Node** head){
     if(root == NULL) {
         return;
     }
     inorder(root->left, head);
-    insertAtHead(&head, root->element);
+    insertAtHead(head, root->element);
     inorder(root->right, head);
 }
 

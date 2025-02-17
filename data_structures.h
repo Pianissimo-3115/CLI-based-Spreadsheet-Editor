@@ -28,7 +28,7 @@ Node* insert(Node* root, Cell* element);
 Node* erase(Node* root, Cell* element);
 bool custom_comparator(Cell* element1, Cell* element2);
 // ll_Node* inorder(Node* root,ll_Node* head);
-void inorder(Node* root,ll_Node* head);
+void inorder(Node* root,ll_Node** head);
 void resetTree(AVL* avl);
 void deleteTree(Node* root);
 
