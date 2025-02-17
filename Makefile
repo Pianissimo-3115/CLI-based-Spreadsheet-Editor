@@ -1,20 +1,20 @@
 CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -O2
 
-OBJ = linkedlist.o \
+OBJ = main.c \
+	linkedlist.o \
 	AVL.o \
 	stack.o \
 	hash_table.o \
-	IO.o \
-	IOtest.o \
-	main.o
+	IO.o
 
-SRC = linkedlist.c \
+
+SRC = main.c \
+	linkedlist.c \
 	AVL.c \
 	stack.c \
 	hash_table.c \
-	IO.c \
-	IOtest.c \
-	main.c
+	IO.c
 
 DEPS = cell_operations.h data_structures.h
 
@@ -28,5 +28,5 @@ run: sheet
 	./sheet $(a) $(b)
 
 clean:
-	rm -f *.o
-	rm -f sheet
+	rm *.o
+	rm sheet.exe

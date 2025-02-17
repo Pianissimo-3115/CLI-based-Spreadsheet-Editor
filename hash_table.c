@@ -86,27 +86,27 @@ void free_table(HashTable *ht) {
     }
     free(ht);
 }
-#ifndef MAIN
-int main() {
-    HashTable *ht = create_table(TABLE_SIZE);
+// #ifndef MAIN
+// int main() {
+//     HashTable *ht = create_table(TABLE_SIZE);
 
-    Cell cell1 = { .col_name = 1, .row_num = 1 };
-    Cell cell2 = { .col_name = 2, .row_num = 2 };
-    Cell cell3 = { .col_name = 3, .row_num = 3 };
+//     Cell cell1 = { .col_name = 1, .row_num = 1 };
+//     Cell cell2 = { .col_name = 2, .row_num = 2 };
+//     Cell cell3 = { .col_name = 3, .row_num = 3 };
 
-    hash_insert(ht, &cell1);
-    hash_insert(ht, &cell2);
-    hash_insert(ht, &cell3);
+//     hash_insert(ht, &cell1);
+//     hash_insert(ht, &cell2);
+//     hash_insert(ht, &cell3);
 
-    printf("Search cell1: %d\n", search(ht, &cell1));
-    printf("Search cell2: %d\n", search(ht, &cell2));
-    printf("Search cell3: %d\n", search(ht, &cell3));
+//     printf("Search cell1: %d\n", search(ht, &cell1));
+//     printf("Search cell2: %d\n", search(ht, &cell2));
+//     printf("Search cell3: %d\n", search(ht, &cell3));
 
-    hash_remove(ht, &cell2);
-    printf("Search cell2 after removal: %d\n", search(ht, &cell2));
+//     hash_remove(ht, &cell2);
+//     printf("Search cell2 after removal: %d\n", search(ht, &cell2));
 
-    free_table(ht);
+//     free_table(ht);
 
-    return 0;
-}
-#endif
+//     return 0;
+// }
+// #endif

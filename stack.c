@@ -107,10 +107,10 @@ void testStack() {
 
     printf("Stack test completed successfully.\n");
 }
-#ifndef MAIN
-// Main function to run the test case
-int main() {
-    testStack();
-    return 0;
-}
-#endif
+// #ifndef MAIN
+// // Main function to run the test case
+// int main() {
+//     testStack();
+//     return 0;
+// }
+// #endif
