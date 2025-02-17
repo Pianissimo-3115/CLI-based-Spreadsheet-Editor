@@ -6,15 +6,11 @@
 
 
 bool custom_comparator(Cell* element1, Cell* element2) {
-    if (element1->depth == element2->depth) {
-        if (element1->col_name == element2->col_name) {
-            return element1->row_num < element2->row_num;
-        }
-        return element1->col_name < element2->col_name;
+    if (element1->col_name == element2->col_name) {
+        return element1->row_num < element2->row_num;
     }
-    return element1->depth < element2->depth;
+    return element1->col_name < element2->col_name;
 }
-
 Node* create_node(Cell* element) {
     Node* node = (Node*)malloc(sizeof(Node));
     node->element = element;
@@ -90,10 +86,10 @@ Node* min_value_node(Node* node) {
 
 void deleteTree(Node* node) {
     if (node == NULL) return;
-
+    
     deleteTree(node->left);
     deleteTree(node->right);
-
+    
     free(node);
 }
 
@@ -145,119 +141,126 @@ Node* erase(Node* root, Cell* element) {
     return root;
 }
 
-int inorder_helper(Node* root, Cell** arr, int index) {
-    if (root == NULL)
-        return index;
-    // Traverse left subtree
-    index = inorder_helper(root->left, arr, index);
-    // Copy the current node's element into the array
-    *arr[index] = *(root->element);
-    index++;
-    // Traverse right subtree
-    index = inorder_helper(root->right, arr, index);
-    return index;
-}
-
-// Fills the array `arr` with the inorder traversal of the tree and
-// returns the number of cells copied.
-int inorder(Node* root, Cell** arr) {
-    return inorder_helper(root, arr, 0);
-}
-
-// Cell* preorder(Node* root) {
-//     if (root == NULL) return;
-//     printf("%d ", root->element->value); // Assuming Cell has a value field
-//     preorder(root->left);
-//     preorder(root->right);
+// int inorder_helper(Node* root, Cell* arr[], int index) {
+//     if (root == NULL) {
+//         return index;
+//     }   
+//     index = inorder_helper(root->left, arr, index);
+//     arr[index] = root->element;  // Store pointer to the existing Cell
+//     index++;
+//     index = inorder_helper(root->right, arr, index);
+//     return index;
 // }
 
-// Cell* postorder(Node* root) {
-//     if (root == NULL) return;
-//     postorder(root->left);
-//     postorder(root->right);
-//     printf("%d ", root->element->value); // Assuming Cell has a value field
+// void inorder(Node* root, Cell* arr[]) {
+//     int size=sizeof(arr)/sizeof(Cell*);
+//     for (int i = 0; i < size; i++) {
+//         arr[i] = NULL;
+//     }
+//     inorder_helper(root, arr, 0);
 // }
+// ll_Node* inorder(Node* root, LinkedList* merged, ll_Node* head){
+//     if(root == NULL) {
+//         return head;
+//     }
+//     // printf("Inorder\n");
+//     head = inorder(root->left, merged, head);
+//     // printf("Afterleft\n");
+//     if(head==NULL){
+//         insertAtEnd(merged, root->element);
+//         head=merged->head;
+//     }
+//     else if(custom_comparator(root->element,head->data)){
+//         merged->head = createNode(root->element);
+//         merged->head->next = head;
+//         head = merged->head;
+//     }
+//     else if(head->next == NULL){
+//         insertAtPosition(head, root->element);
+//         head=head->next;
+//     }
+//     else{
+//         while(head->next!=NULL&&custom_comparator(head->next->data,root->element)){
+//             head=head->next;
+//         }
+//         if(head->next==NULL){
+//             insertAtPosition(head, root->element);
+//         }
 
-void level(Node* root) {
-    if (root == NULL) return;
-
-    Node* queue[1000];
-    int front = 0, rear = 0;
-
-    queue[rear++] = root;
-    queue[rear++] = NULL;
-
-    while (front < rear) {
-        Node* temp = queue[front++];
-        if (temp == NULL) {
-            if (front < rear) queue[rear++] = NULL;
-            printf("\n");
-        } else {
-            printf("%d ", temp->element->value); // Assuming Cell has a value field
-            if (temp->left) queue[rear++] = temp->left;
-            if (temp->right) queue[rear++] = temp->right;
-        }
+//         else if(custom_comparator(root->element,head->next->data)) insertAtPosition(head, root->element);
+//         head=head->next;
+//     }
+//     head = inorder(root->right, merged, head);
+//     return head;
+// }
+void inorder(Node * root, ll_Node* head){
+    if(root == NULL) {
+        return;
     }
+    inorder(root->left, head);
+    insertAtHead(head, root->element);
+    inorder(root->right, head);
 }
 
-int main() {
-    AVL avl;
-    avl.root = NULL;
 
-    Cell cell1 = { .value = 10 };
-    Cell cell2 = { .value = 20 };
-    Cell cell3 = { .value = 30 };
-    Cell cell4 = { .value = 40 };
-    Cell cell5 = { .value = 50 };
-    Cell cell6 = { .value = 25 };
+// int main() {
+//     AVL avl;
+//     avl.root = NULL;
 
-    avl.root = insert(avl.root, &cell1);
-    printf("Level order traversal: \n");
-    level(avl.root);
-    avl.root = insert(avl.root, &cell2);
-    printf("Level order traversal: \n");
-    level(avl.root);
-    avl.root = insert(avl.root, &cell3);
-    printf("Level order traversal: \n");
-    level(avl.root);
-    avl.root = insert(avl.root, &cell4);
-    printf("Level order traversal: \n");
-    level(avl.root);
-    avl.root = insert(avl.root, &cell5);
-    printf("Level order traversal: \n");
-    level(avl.root);
-    avl.root = insert(avl.root, &cell6);
-    printf("Level order traversal: \n");
-    level(avl.root);
+//     Cell cell1 = { .value = 10};
+//     Cell cell2 = { .value = 20};
+//     Cell cell3 = { .value = 30};
+//     Cell cell4 = { .value = 40};
+//     Cell cell5 = { .value = 50};
+//     Cell cell6 = { .value = 25};
 
-    printf("Inorder traversal: ");
-    Cell* arr[100];
-    inorder(avl.root,&arr[0]);
-    printf("\n");
-    for (int i = 0; i < 100; i++)
-    {
-        if(arr[i] == NULL) continue;
-        printf("%d ", arr[i]->value);
-    }
-    for (int i = 0; i < 100; i++)
-    {
-        if(arr[i]!=NULL){
-            free(arr[i]);
-        }
-    }
+//     avl.root = insert(avl.root, &cell1);
+//     printf("Level order traversal: \n");
+//     level(avl.root);
     
-    printf("Level order traversal: \n");
-    level(avl.root);
+//     avl.root = insert(avl.root, &cell2);
+//     printf("Level order traversal: \n");
+//     level(avl.root);
+    
+//     avl.root = insert(avl.root, &cell3);
+//     printf("Level order traversal: \n");
+//     level(avl.root);
+    
+//     avl.root = insert(avl.root, &cell4);
+//     printf("Level order traversal: \n");
+//     level(avl.root);
+    
+//     avl.root = insert(avl.root, &cell5);
+//     printf("Level order traversal: \n");
+//     level(avl.root);
+    
+//     avl.root = insert(avl.root, &cell6);
+//     printf("Level order traversal: \n");
+//     level(avl.root);
 
-    avl.root = erase(avl.root, &cell1);
-    // Cell* arr[100];
-    printf("\nInorder traversal after deletion: ");
-    inorder(avl.root,&arr[0]);
-    printf("\n");
-    for (int i = 0; i < 100; i++)
-    {
-        if(arr[i] == NULL) continue;
-        printf("%d ", arr[i]->value);
-    }
-    return 0;
-}
+//     printf("Inorder traversal: ");
+//     Cell* arr[100] = {NULL};
+//     inorder(avl.root, arr);
+    
+//     for (int i = 0; i < count; i++) {
+//         if(arr[i] != NULL) {
+//             printf("%d ", arr[i]->value);
+//         }
+//     }
+//     printf("\n");
+
+//     printf("Level order traversal: \n");
+//     level(avl.root);
+
+//     avl.root = erase(avl.root, &cell1);
+//     printf("\nInorder traversal after deletion: ");
+//     count = inorder(avl.root, arr);
+//     for (int i = 0; i < count; i++) {
+//         if(arr[i] != NULL) {
+//             printf("%d ", arr[i]->value);
+//         }
+//     }
+//     printf("\n");
+
+//     return 0;
+// }

@@ -1,19 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-// Define the node structure
-typedef struct ll_Node {
-    int data;
-    struct ll_Node* next;
-} ll_Node;
-
-// Define the linked list structure
-typedef struct {
-    ll_Node* head;
-} LinkedList;
+#include "data_structures.h"
 
 // Function to create a new node
-ll_Node* createNode(int data) {
+ll_Node* createNode(Cell* data) {
     ll_Node* newNode = (ll_Node*)malloc(sizeof(ll_Node));
     if (!newNode) {
         return NULL;
@@ -24,14 +14,14 @@ ll_Node* createNode(int data) {
 }
 
 // Function to insert a node at the end of the linked list
-void insertAtEnd(LinkedList* list, int data) {
+void insertAtEnd(ll_Node** head, Cell* data) {
     ll_Node* newNode = createNode(data);
     if (!newNode) return;
-
-    if (list->head == NULL) {
-        list->head = newNode;
-    } else {
-        ll_Node* temp = list->head;
+    if (*head == NULL) {
+        *head = newNode;  
+    } 
+    else {
+        ll_Node* temp = *head;
         while (temp->next != NULL) {
             temp = temp->next;
         }
@@ -39,12 +29,18 @@ void insertAtEnd(LinkedList* list, int data) {
     }
 }
 
-// Function to insert a node at a given position
-void insertAtPosition(ll_Node* position, int data) {
+void insertAtHead(ll_Node** head, Cell* data) {
+    ll_Node* newNode = createNode(data);
+    if (!newNode) return;
+    newNode->next = *head;
+    *head = newNode;
+}
+
+// Function to insert a node after a given position
+void insertAtPosition(ll_Node* position, Cell* data) {
     if (position == NULL) {
         return;
     }
-
     ll_Node* newNode = createNode(data);
     if (!newNode) return;
 
@@ -52,9 +48,9 @@ void insertAtPosition(ll_Node* position, int data) {
     position->next = newNode;
 }
 
-// Function to free the memory of the linked list
-void freeLinkedList(LinkedList* list) {
-    ll_Node* current = list->head;
+// Function to free the linked list
+void freeLinkedList(ll_Node** head) {
+    ll_Node* current = *head;
     ll_Node* nextNode;
 
     while (current != NULL) {
@@ -62,23 +58,39 @@ void freeLinkedList(LinkedList* list) {
         free(current);
         current = nextNode;
     }
-
-    list->head = NULL;
+    *head = NULL; // Set head to NULL
 }
 
-int main() {
-    LinkedList list;
-    list.head = NULL;
-
-    insertAtEnd(&list, 10);
-    insertAtEnd(&list, 20);
-    insertAtEnd(&list, 30);
-
-    ll_Node* position = list.head->next; // Insert after the first node
-    insertAtPosition(position, 25);
-
-    // Free the memory
-    freeLinkedList(&list);
-
-    return 0;
+// Function to print the linked list
+void printLinkedList(ll_Node* head) {
+    ll_Node* temp = head;
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
 }
+
+// int main() {
+//     ll_Node* head = NULL;
+
+//     insertAtEnd(&head, 10);
+//     insertAtEnd(&head, 20);
+//     insertAtEnd(&head, 30);
+
+//     printf("Before inserting at position:\n");
+//     printLinkedList(head);
+
+//     // Insert after the first node
+//     if (head != NULL) {
+//         insertAtPosition(head, 25);
+//     }
+
+//     printf("After inserting at position:\n");
+//     printLinkedList(head);
+
+//     // Free the memory
+//     freeLinkedList(&head);
+
+//     return 0;
+// }
