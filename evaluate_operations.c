@@ -277,7 +277,6 @@ ll_Node* topologicalSort(Cell* current_cell){
     while(temp != NULL){
         if(search(visited, temp->data) == NULL){
             if (dfs(temp->data, visited, recStack, stack)) {
-                free(stack->array);
                 free(stack);
                 return NULL;
             }
@@ -289,7 +288,6 @@ ll_Node* topologicalSort(Cell* current_cell){
         insertAtHead(&head,pop(stack));
     }
     insertAtHead(&head, current_cell);
-    free(stack->array);
     free(stack);
     free(temp);
     free(visited->table);

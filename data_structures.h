@@ -66,15 +66,26 @@ Cell* search(HashTable *ht, int col_name);
 void free_table(HashTable *ht);
 
 // stack structure
+// typedef struct Stack {
+//     int top;
+//     int capacity;
+//     Cell* (*array);
+// } Stack;
+
+// Stack *createStack();
+// void push(Stack *stack, Cell* item);
+// Cell* pop(Stack *stack);
+// int isEmpty(Stack *stack);
+
+
 typedef struct Stack {
-    int top;
-    int capacity;
-    Cell* (*array);
+    ll_Node* top;
 } Stack;
 
-Stack *createStack();
-void push(Stack *stack, Cell* item);
-Cell* pop(Stack *stack);
-int isEmpty(Stack *stack);
+Stack* createStack();
+void push(Stack* stack, Cell* item);
+Cell* pop(Stack* stack);
+int isEmpty(Stack* stack);
+void freeStack(Stack* stack);
 
 #endif
