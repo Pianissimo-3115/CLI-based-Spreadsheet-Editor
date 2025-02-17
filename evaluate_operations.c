@@ -284,9 +284,9 @@ ll_Node* topological_sort(Cell* current_cell){
     }
 
     while(!isEmpty(stack)) {
-        insertAtHead(head,pop(stack));
+        insertAtHead(&head,pop(stack));
     }
-    insertAtHead(head, current_cell);
+    insertAtHead(&head, current_cell);
     freeStack(stack);
     freeLinkedList(temp);
     free_table(visited);
@@ -318,84 +318,83 @@ int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) {
     // this func would take care of updating the children of the cell and also detect cycle if any
     return update_children(data, cell, R, C); 
 }
-#ifndef MAIN
-int main(){
-    Cell** data = (Cell**)malloc(5 * sizeof(Cell*));
-    for (int i = 0; i < 5; i++) {
-        data[i] = (Cell*)malloc(5 * sizeof(Cell));
-        for (int j = 0; j < 5; j++) {
-            data[i][j].value = i * 5 + j;
-            data[i][j].col_name = j + 1;
-            data[i][j].row_num = i + 1;
-            data[i][j].valid = 1;
-            data[i][j].func = NULL;
-            data[i][j].children = (AVL*)malloc(sizeof(AVL));
-            data[i][j].children->root = NULL;
-        }
-    }
-    Cell_func* func = (Cell_func*)malloc(sizeof(Cell_func));
-    func->op = ADD;
-    func->flag1 = 1;
-    func->flag2 = 1;
-    func->Cell1 = &data[0][1];
-    func->Cell2 = &data[1][0];
-    data[0][0].func = func;     // A1 = B1 + A2
-    evaluate(data, &data[0][0], NULL, 5, 5);
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            printf("%d ", data[i][j].value);
-        }
-        printf("\n");
-    }
 
-    Cell_func* func2 = (Cell_func*)malloc(sizeof(Cell_func));
-    func2->op = ADD;
-    func2->flag1 = 1;
-    func2->flag2 = 1;
-    func2->Cell1 = &data[0][0];
-    func2->Cell2 = &data[1][1];
-    data[1][0].func = func2;     // B1 = A1 + B2
-    evaluate(data, &data[0][0], func, 5, 5);
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            printf("%d ", data[i][j].value);
-        }
-        printf("\n");
-    }
+// int main(){
+//     Cell** data = (Cell**)malloc(5 * sizeof(Cell*));
+//     for (int i = 0; i < 5; i++) {
+//         data[i] = (Cell*)malloc(5 * sizeof(Cell));
+//         for (int j = 0; j < 5; j++) {
+//             data[i][j].value = i * 5 + j;
+//             data[i][j].col_name = j + 1;
+//             data[i][j].row_num = i + 1;
+//             data[i][j].valid = 1;
+//             data[i][j].func = NULL;
+//             data[i][j].children = (AVL*)malloc(sizeof(AVL));
+//             data[i][j].children->root = NULL;
+//         }
+//     }
+//     Cell_func* func = (Cell_func*)malloc(sizeof(Cell_func));
+//     func->op = ADD;
+//     func->flag1 = 1;
+//     func->flag2 = 1;
+//     func->Cell1 = &data[0][1];
+//     func->Cell2 = &data[1][0];
+//     data[0][0].func = func;     // A1 = B1 + A2
+//     evaluate(data, &data[0][0], NULL, 5, 5);
+//     for (int i = 0; i < 5; i++) {
+//         for (int j = 0; j < 5; j++) {
+//             printf("%d ", data[i][j].value);
+//         }
+//         printf("\n");
+//     }
 
-    Cell_func* func3 = (Cell_func*)malloc(sizeof(Cell_func));
-    func3->op = ADD;
-    func3->flag1 = 1;
-    func3->flag2 = 1;
-    func3->Cell1 = &data[0][2];
-    func3->Cell2 = &data[1][2];
-    data[1][1].func = func3;     // B2 = A2 + B3
-    evaluate(data, &data[0][0], func2, 5, 5);
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            printf("%d ", data[i][j].value);
-        }
-        printf("\n");
-    }
+//     Cell_func* func2 = (Cell_func*)malloc(sizeof(Cell_func));
+//     func2->op = ADD;
+//     func2->flag1 = 1;
+//     func2->flag2 = 1;
+//     func2->Cell1 = &data[0][0];
+//     func2->Cell2 = &data[1][1];
+//     data[1][0].func = func2;     // B1 = A1 + B2
+//     evaluate(data, &data[0][0], func, 5, 5);
+//     for (int i = 0; i < 5; i++) {
+//         for (int j = 0; j < 5; j++) {
+//             printf("%d ", data[i][j].value);
+//         }
+//         printf("\n");
+//     }
 
-    Cell_func* func4 = (Cell_func*)malloc(sizeof(Cell_func));
-    func4->op = ADD;
-    func4->flag1 = 1;
-    func4->flag2 = 1;
-    func4->Cell1 = &data[0][3];
-    func4->Cell2 = &data[1][3];
-    data[1][2].func = func4;     // B3 = A3 + B4
-    evaluate(data, &data[0][0], func3, 5, 5);
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            printf("%d ", data[i][j].value);
-        }
-        printf("\n");
-    }
+//     Cell_func* func3 = (Cell_func*)malloc(sizeof(Cell_func));
+//     func3->op = ADD;
+//     func3->flag1 = 1;
+//     func3->flag2 = 1;
+//     func3->Cell1 = &data[0][2];
+//     func3->Cell2 = &data[1][2];
+//     data[1][1].func = func3;     // B2 = A2 + B3
+//     evaluate(data, &data[0][0], func2, 5, 5);
+//     for (int i = 0; i < 5; i++) {
+//         for (int j = 0; j < 5; j++) {
+//             printf("%d ", data[i][j].value);
+//         }
+//         printf("\n");
+//     }
+
+//     Cell_func* func4 = (Cell_func*)malloc(sizeof(Cell_func));
+//     func4->op = ADD;
+//     func4->flag1 = 1;
+//     func4->flag2 = 1;
+//     func4->Cell1 = &data[0][3];
+//     func4->Cell2 = &data[1][3];
+//     data[1][2].func = func4;     // B3 = A3 + B4
+//     evaluate(data, &data[0][0], func3, 5, 5);
+//     for (int i = 0; i < 5; i++) {
+//         for (int j = 0; j < 5; j++) {
+//             printf("%d ", data[i][j].value);
+//         }
+//         printf("\n");
+//     }
 
 
 
-    printf("\n");
-    printf("Done\n");
-}
-#endif
+//     printf("\n");
+//     printf("Done\n");
+// }

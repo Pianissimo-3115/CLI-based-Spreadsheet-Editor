@@ -29,11 +29,11 @@ void insertAtEnd(ll_Node* head, Cell* data) {
     }
 }
 
-void insertAtHead(ll_Node* head, Cell* data) {
+void insertAtHead(ll_Node** head, Cell* data) {
     ll_Node* newNode = createNode(data);
     if (!newNode) return;
-    newNode->next = head;
-    head = newNode;
+    newNode->next = *head;
+    *head = newNode;
 }
 
 // Function to insert a node after a given position

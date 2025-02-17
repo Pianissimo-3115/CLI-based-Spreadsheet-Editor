@@ -51,7 +51,7 @@ typedef struct ll_Node {
 
 ll_Node* createNode(Cell* data);
 void insertAtEnd(ll_Node* head, Cell* data);
-void insertAtHead(ll_Node* head, Cell* data);
+void insertAtHead(ll_Node** head, Cell* data);
 void insertAtPosition(ll_Node* position, Cell* data);
 void freeLinkedList(ll_Node* head);
 void printLinkedList(ll_Node* head);

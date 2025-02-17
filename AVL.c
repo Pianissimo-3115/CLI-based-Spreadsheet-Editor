@@ -198,7 +198,7 @@ void inorder(Node * root, ll_Node* head){
         return;
     }
     inorder(root->left, head);
-    insertAtHead(head, root->element);
+    insertAtHead(&head, root->element);
     inorder(root->right, head);
 }
 

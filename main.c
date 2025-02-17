@@ -190,7 +190,7 @@ int main()
                     new_func -> Cell2 = val2;
                 }
 
-                evaluate(data, target, old_func, R, C);
+                int x=evaluate(data, target, old_func, R, C);
                 target -> func = new_func;
     
 
