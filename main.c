@@ -142,63 +142,91 @@ int main()
                 new_func = malloc(sizeof(Cell_func));
                 new_func -> op = parse.operation;
 
-                if (parse.val1Type == 0)
-                {
-                    new_func -> flag1 = 0;
-                    new_func -> value1 = parse.val1Int;
-                }
-                else
-                {
-                    new_func -> flag1 = 1;
-                    Cell* val1 = *(data + C*(parse.val1Row-1) + parse.val1Col - 1);
-                    if (val1 == NULL)
+                if (parse.operation>5){
+                    for (int i = parse.val1Row; i <= parse.val2Row; i++)
                     {
-                        //Initialise val1
-    
-                        val1 = (Cell*)  malloc(sizeof(Cell));
-                        *(data + C*(parse.val1Row-1) + parse.val1Col - 1) = val1;
-                        val1 -> col_name = parse.val1Col;
-                        val1 -> row_num = parse.val1Row;
-                        val1 -> value = 0;
-                        val1 -> valid = true;
-                        val1 -> children = (AVL* ) malloc(sizeof(AVL));
-                        val1 -> children -> root = NULL;
-                        Cell_func* val1_func = NULL;
-                        val1->func = val1_func;
+                        for (int j = parse.val1Col; j <= parse.val2Col; j++)
+                        {
+                            Cell* val = *(data + C*(i-1) + j - 1);
+                            if (val == NULL)
+                            {
+                                //Initialise val1
+            
+                                val = (Cell*)  malloc(sizeof(Cell));
+                                *(data + C*(i-1) + j - 1) = val;
+                                val -> col_name = i;
+                                val -> row_num = j;
+                                val -> value = 0;
+                                val -> valid = true;
+                                val -> children = (AVL* ) malloc(sizeof(AVL));
+                                val -> children -> root = NULL;
+                                // Cell_func* val_func = NULL;
+                                val->func = NULL;
+                            }
+                        }
+                        
                     }
-                    new_func -> Cell1 = val1;
+                    
                 }
+                /* else */ {
+                    if (parse.val1Type == 0)
+                    {
+                        new_func -> flag1 = 0;
+                        new_func -> value1 = parse.val1Int;
+                    }
+                    else
+                    {
+                        new_func -> flag1 = 1;
+                        Cell* val1 = *(data + C*(parse.val1Row-1) + parse.val1Col - 1);
+                        if (val1 == NULL)
+                        {
+                            //Initialise val1
+        
+                            val1 = (Cell*)  malloc(sizeof(Cell));
+                            *(data + C*(parse.val1Row-1) + parse.val1Col - 1) = val1;
+                            val1 -> col_name = parse.val1Col;
+                            val1 -> row_num = parse.val1Row;
+                            val1 -> value = 0;
+                            val1 -> valid = true;
+                            val1 -> children = (AVL* ) malloc(sizeof(AVL));
+                            val1 -> children -> root = NULL;
+                            // Cell_func* val1_func = NULL;
+                            val1->func = NULL;
+                        }
+                        new_func -> Cell1 = val1;
+                    }
 
-                if (parse.val2Type == 0)
-                {
-                    new_func -> flag2 = 0;
-                    new_func -> value2 = parse.val2Int;
-                }
-                else
-                {
-                    new_func -> flag2 = 1;
-                    Cell* val2 = *(data + C*(parse.val2Row-1) + parse.val2Col - 1);
-                    if (val2 == NULL)
+                    if (parse.val2Type == 0)
                     {
-                        //Initialise val2
-    
-                        val2 = (Cell*)  malloc(sizeof(Cell));
-                        *(data + C*(parse.val2Row-1) + parse.val2Col - 1) = val2;
-                        val2 -> col_name = parse.val2Col;
-                        val2 -> row_num = parse.val2Row;
-                        val2 -> value = 0;
-                        val2 -> valid = true;
-                        val2 -> children = (AVL* ) malloc(sizeof(AVL));
-                        val2 -> children -> root = NULL;
-                        Cell_func* val2_func = NULL;
-                        val2->func = val2_func;
+                        new_func -> flag2 = 0;
+                        new_func -> value2 = parse.val2Int;
                     }
-                    new_func -> Cell2 = val2;
+                    else
+                    {
+                        new_func -> flag2 = 1;
+                        Cell* val2 = *(data + C*(parse.val2Row-1) + parse.val2Col - 1);
+                        if (val2 == NULL)
+                        {
+                            //Initialise val2
+        
+                            val2 = (Cell*)  malloc(sizeof(Cell));
+                            *(data + C*(parse.val2Row-1) + parse.val2Col - 1) = val2;
+                            val2 -> col_name = parse.val2Col;
+                            val2 -> row_num = parse.val2Row;
+                            val2 -> value = 0;
+                            val2 -> valid = true;
+                            val2 -> children = (AVL* ) malloc(sizeof(AVL));
+                            val2 -> children -> root = NULL;
+                            // Cell_func* val2_func = NULL;
+                            val2->func = NULL;
+                        }
+                        new_func -> Cell2 = val2;
+                    }
                 }
 
                 target -> func = new_func;
                 int x=evaluate(data, target, old_func, R, C);
-                
+
                 if (x==0)
                 {
                     lastValid = false;

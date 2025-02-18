@@ -72,8 +72,8 @@ int stdev_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
             // (*(data + C*(i - 1) + j -1))->children->root=insert((*(data + C*(i - 1) + j -1))->children->root,cell);
         }        
     }
-    int mean = sum/count;
-    int sum_sq = 0;
+    long double mean = sum/count;
+    long double sum_sq = 0;
     for (int i = cell1->col_name; i <=cell2->col_name; i++){
         for (int j = cell1->row_num; j <= cell2->row_num; j++){
             sum_sq += pow((*(data + C*(j - 1) + i - 1))->value - mean, 2);
@@ -272,7 +272,6 @@ void update_parent_avls(Cell** data, Cell *cell, int R, int C /*, Cell_func* old
 }
 
 int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stack) {
-    hash_insert(visited, current_cell);
     hash_insert(recStack, current_cell);
     ll_Node** temp = (ll_Node**)malloc(sizeof(ll_Node*));
     *temp = NULL;
@@ -290,6 +289,7 @@ int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stac
         curr = curr->next; 
     }
     // function to be implemented
+    hash_insert(visited, current_cell);
     hash_remove(recStack, current_cell); // Remove node from recursion stack
     push(stack, current_cell); 
     while(*temp != NULL) {              // this frees the linkedlist
@@ -305,33 +305,40 @@ ll_Node* topological_sort(Cell* current_cell){
     HashTable* visited = create_table(TABLE_SIZE);
     HashTable* recStack = create_table(TABLE_SIZE);
     Stack *stack = createStack();
-    ll_Node** head = (ll_Node**)malloc(sizeof(ll_Node*));
-    ll_Node** temp = (ll_Node**)malloc(sizeof(ll_Node*));
-    *temp = NULL;
-    *head = NULL;
-    inorder(current_cell->children->root, temp);
-
-    while(*temp != NULL){
-        if(!hash_search(visited, (*temp)->data)){
-            if (dfs((*temp)->data, visited, recStack, stack)) {
-                free(stack);
-                return NULL;
-            }
-        }
-        (*temp) = (*temp)->next;
+    // ll_Node** head = (ll_Node**)malloc(sizeof(ll_Node*));
+    // ll_Node** temp = (ll_Node**)malloc(sizeof(ll_Node*));
+    // *temp = NULL;
+    // *head = NULL;
+    // inorder(current_cell->children->root, temp);
+    if (dfs(current_cell, visited, recStack, stack)) {
+        freeStack(stack);
+        free_table(visited);
+        free_table(recStack);
+        // free(head);
+        return NULL;
     }
+    // while(*temp != NULL){
+    //     if(!hash_search(visited, (*temp)->data)){
+    //         if (dfs((*temp)->data, visited, recStack, stack)) {
+    //             free(stack);
+    //             return NULL;
+    //         }
+    //     }
+    //     (*temp) = (*temp)->next;
+    // }
 
-    while(!isEmpty(stack)) {
-        insertAtHead(head,pop(stack));
-    }
-    insertAtHead(head, current_cell);
-    freeStack(stack);
-    freeLinkedList((*temp));
-    free(temp);
+    // while(!isEmpty(stack)) {
+    //     insertAtHead(head,pop(stack));
+    // }
+    // insertAtHead(head, current_cell);
+    // freeLinkedList((*temp));
+    // free(temp);
     free_table(visited);
     free_table(recStack);
-    ll_Node* ret=*head;
-    free(head);
+    ll_Node* ret=stack->top;
+    free(stack);
+    // free(head);
+    // freeStack(stack);
     return ret;
 }
 
