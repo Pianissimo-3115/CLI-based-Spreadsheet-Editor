@@ -32,5 +32,7 @@ run: sheet
 debug:
 	gcc -g main.c linkedlist.c AVL.c stack.c hash_table.c evaluate_operations.c IO.c -o sheet.exe
 	gdb sheet.exe
+	
 clean:
-	rm ./sheet.exe
+	rm -f sheet sheet.exe *.o
+

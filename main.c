@@ -198,7 +198,15 @@ int main()
 
                 target -> func = new_func;
                 int x=evaluate(data, target, old_func, R, C);
-    
+                
+                if (x==0)
+                {
+                    lastValid = false;
+                }
+                else
+                {
+                    lastValid = true;
+                }
 
 
             break;

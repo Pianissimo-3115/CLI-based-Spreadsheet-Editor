@@ -137,6 +137,10 @@ void remove_old_dependencies(Cell** data, Cell_func* old_func, Cell* cell, int R
 void calculate(Cell** data, Cell* cell, int R, int C) {
     int initial_value = cell->value;
     Cell_func *func = cell->func;
+    if(cell->func == NULL) {
+        cell->value=0;
+        return;
+    }
     int val1 = 0, val2 = 0;
     if(func->flag1) 
         val1 = func->Cell1->value;
@@ -204,6 +208,7 @@ void calculate(Cell** data, Cell* cell, int R, int C) {
 }
 void update_parent_avls(Cell** data, Cell *cell, int R, int C /*, Cell_func* old_func*/){
     Cell_func* func=cell->func;
+    if(func==NULL) return;
     // bool was_range_func;
     // if(old_func!=NULL&&old_func->op>5) was_range_func=true;
     // else was_range_func=false;
@@ -269,28 +274,30 @@ void update_parent_avls(Cell** data, Cell *cell, int R, int C /*, Cell_func* old
 int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stack) {
     hash_insert(visited, current_cell);
     hash_insert(recStack, current_cell);
-    ll_Node* temp = NULL;
-    inorder(current_cell->children->root, &temp);
-    ll_Node*curr = temp;
+    ll_Node** temp = (ll_Node**)malloc(sizeof(ll_Node*));
+    *temp = NULL;
+    inorder(current_cell->children->root, temp);
+    ll_Node* curr = *temp;
     while (curr) {
-        if (!hash_search(visited, curr->data)) {
+        if (hash_search(recStack, curr->data)) {
+            return 1; 
+        } 
+        else if (!hash_search(visited, curr->data)) {
             if (dfs(curr->data, visited, recStack, stack)) {
                 return 1; 
             }
-        } 
-        else if (hash_search(recStack, curr->data)) {
-            return 1; 
         }
         curr = curr->next; 
     }
     // function to be implemented
     hash_remove(recStack, current_cell); // Remove node from recursion stack
     push(stack, current_cell); 
-    while(temp != NULL) {
-        ll_Node* temp2 = temp;
-        temp = temp->next;
+    while(*temp != NULL) {              // this frees the linkedlist
+        ll_Node* temp2 = *temp;
+        *temp = (*temp)->next;
         free(temp2);
     }
+    free(temp);
     return 0;
 }
 
@@ -320,9 +327,12 @@ ll_Node* topological_sort(Cell* current_cell){
     insertAtHead(head, current_cell);
     freeStack(stack);
     freeLinkedList((*temp));
+    free(temp);
     free_table(visited);
     free_table(recStack);
-    return (*head);
+    ll_Node* ret=*head;
+    free(head);
+    return ret;
 }
 
 int update_children(Cell** data, Cell* cell, int R, int C) {
@@ -345,10 +355,17 @@ int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) {
         remove_old_dependencies(data, old_func, cell, R, C);
     }
     update_parent_avls(data,cell,R,C/*,old_func*/);
-    if(old_func!=NULL) free(old_func);
+    // if(old_func!=NULL) free(old_func);
 
     // this func would take care of updating the children of the cell and also detect cycle if any
-    return update_children(data, cell, R, C); 
+    int x = update_children(data, cell, R, C); 
+
+    if(x == 0) {
+        Cell_func* func=cell->func;
+        cell->func=old_func;
+        int xx = evaluate(data,cell,func,R,C);
+    }
+    return x;
 }
 
 // int main(){

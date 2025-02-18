@@ -5,7 +5,7 @@
 #define TABLE_SIZE 503
 
 int hash(Cell* cell, int size) {
-    return (cell->col_name+cell->row_num)%size;
+    return (cell->col_name+cell->row_num-2)%size;
 }
 
 HashTable* create_table(int size) {
@@ -39,8 +39,8 @@ void hash_insert(HashTable *ht, Cell *cell) {
         }
         current = current->next;
     }
-    
-    insertAtPosition(current, cell);
+    if(current==NULL) insertAtHead(ht->table+index, cell);
+    else insertAtPosition(current, cell);
 }
 
 void hash_remove(HashTable *ht, Cell *cell) {
@@ -51,18 +51,21 @@ void hash_remove(HashTable *ht, Cell *cell) {
     ll_Node *prev = NULL;
 
     while (current != NULL) {
+        ll_Node* temp=NULL;
         if (current->data == cell) {
             if (prev == NULL) {
                 ht->table[index] = current->next;
             } else {
                 prev->next = current->next;
             }
+            temp = current->next;
             free(current);
             return;
         }
         prev = current;
-        current = current->next;
+        current = temp;
     }
+
 }
 int hash_search(HashTable *ht, Cell* cell) {
     if (!ht)
