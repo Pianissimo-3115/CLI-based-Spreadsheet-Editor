@@ -240,7 +240,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         char checkSUM[4] = "SUM(";
         char checkSTDEV[6] = "STDEV(";
         char checkSLEEP[6] = "SLEEP(";
-        bool isFunc;
+        bool isFunc=false;
 
         if (check_chars_equal(inp + exprStart, checkMIN, 4))
         {

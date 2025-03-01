@@ -6,7 +6,7 @@
 #include "data_structures.h"
 
 
-int min_eval(Cell** data,Cell* cell, Cell_func* func, int R, int C){         
+int min_eval(Cell** data, Cell_func* func, int C){         
     Cell* cell1 = func->Cell1;
     Cell* cell2 = func->Cell2;
     int mini = INT_MAX;
@@ -22,7 +22,7 @@ int min_eval(Cell** data,Cell* cell, Cell_func* func, int R, int C){
     return mini;
 }
 
-int max_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){       
+int max_eval(Cell** data, Cell_func* func, int C){       
     Cell* cell1 = func->Cell1;
     Cell* cell2 = func->Cell2;
     int maxi = INT_MIN;
@@ -38,7 +38,7 @@ int max_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
     return maxi;
 }
 
-int sum_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
+int sum_eval(Cell** data, Cell_func* func, int C){
     Cell* cell1 = func->Cell1;
     Cell* cell2 = func->Cell2;
     int sum = 0;
@@ -54,7 +54,7 @@ int sum_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
     return sum;
 }
 
-int avg_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
+int avg_eval(Cell** data, Cell_func* func, int C){
     Cell* cell1 = func->Cell1;
     Cell* cell2 = func->Cell2;
     int sum = 0;
@@ -72,7 +72,7 @@ int avg_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
     return sum/count;
 }
 
-int stdev_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
+int stdev_eval(Cell** data, Cell_func* func, int C){
     Cell* cell1 = func->Cell1;
     Cell* cell2 = func->Cell2;
     int sum = 0;
@@ -129,7 +129,7 @@ void sleep(int seconds) {
 //     }
 //     return;
 // }
-void remove_old_dependencies(Cell** data, Cell_func* old_func, Cell* cell, int R, int C){
+void remove_old_dependencies(Cell** data, Cell_func* old_func, Cell* cell, int C){
     if(old_func->op>5){             // is a range function
         Cell* start=old_func->Cell1;
         Cell* end=old_func->Cell2;
@@ -149,8 +149,7 @@ void remove_old_dependencies(Cell** data, Cell_func* old_func, Cell* cell, int R
         }
     }
 }
-void calculate(Cell** data, Cell* cell, int R, int C) {
-    int initial_value = cell->value;
+void calculate(Cell** data, Cell* cell, int C) {
     Cell_func *func = cell->func;
     if(cell->func == NULL) {
         cell->value=0;
@@ -166,8 +165,8 @@ void calculate(Cell** data, Cell* cell, int R, int C) {
     else 
         val2 = func->value2;
     cell->valid = 1;
+    int val = 0;
     switch (func->op) {
-        int val = 0;
         case FIX: 
             cell->value = val1; 
             break;
@@ -216,33 +215,35 @@ void calculate(Cell** data, Cell* cell, int R, int C) {
             break;
         }
         case MIN:
-            val = min_eval(data, cell, func, R, C);
+            val = min_eval(data, func, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;    
         case MAX:
-            val = max_eval(data, cell, func, R, C);
+            val = max_eval(data, func, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;
         case STDEV:
-            val = stdev_eval(data, cell, func, R, C);
+            val = stdev_eval(data, func, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;
         case SUM:
-            val = sum_eval(data, cell, func, R, C);
+            val = sum_eval(data, func, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;
         case AVG:
-            val = avg_eval(data, cell, func, R, C);
+            val = avg_eval(data, func, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;
+        default:
+            break;
     }
 }
-void update_parent_avls(Cell** data, Cell *cell, int R, int C /*, Cell_func* old_func*/){
+void update_parent_avls(Cell** data, Cell *cell, int C /*, Cell_func* old_func*/){
     Cell_func* func=cell->func;
     if(func==NULL) return;
     // bool was_range_func;
@@ -377,12 +378,12 @@ ll_Node* topological_sort(Cell* current_cell){
     return ret;
 }
 
-int update_children(Cell** data, Cell* cell, int R, int C) {
+int update_children(Cell** data, Cell* cell, int C) {
     ll_Node* head = topological_sort(cell);
     if(head == NULL) return 0;
     while (head != NULL) {
         Cell* element = head->data;
-        calculate(data, element, R, C);
+        calculate(data, element, C);
         ll_Node* temp = head;
         head = head->next;
         free(temp);
@@ -394,18 +395,18 @@ int update_children(Cell** data, Cell* cell, int R, int C) {
 int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) { 
     // int initial_value=cell->value;
     if(old_func!=NULL){
-        remove_old_dependencies(data, old_func, cell, R, C);
+        remove_old_dependencies(data, old_func, cell, C);
     }
-    update_parent_avls(data,cell,R,C/*,old_func*/);
+    update_parent_avls(data,cell,C/*,old_func*/);
     // if(old_func!=NULL) free(old_func);
 
     // this func would take care of updating the children of the cell and also detect cycle if any
-    int x = update_children(data, cell, R, C); 
+    int x = update_children(data, cell, C); 
 
     if(x == 0) {
         Cell_func* func=cell->func;
         cell->func=old_func;
-        int xx = evaluate(data,cell,func,R,C);
+        evaluate(data,cell,func,R,C);
     }
     return x;
 }

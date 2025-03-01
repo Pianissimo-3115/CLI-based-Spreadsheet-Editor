@@ -6,6 +6,7 @@
 #include<stdio.h>
 // #include<stdbool.h>
 #include"data_structures.h"
+#include<time.h>
 
 // void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
 /*
@@ -25,16 +26,15 @@ int main(int argc, char* argv[])
     int displayR = 1;
     int displayC = 1;
     bool lastValid = true;
-    float lastTime = 0.0;
+    time_t lastTime = 0;
     bool quit = false;
 
     int R, C;
-    char dummy;
     // scanf("%u", &R);
     // scanf("%u", &C);
     // scanf("%c", &dummy);
-    R = atoi(argv[1]);
-    C = atoi(argv[2]);
+    R = atoi(argv[argc-2]);
+    C = atoi(argv[argc-1]);
 
     Cell** data = (Cell**) calloc(R*C, sizeof(Cell*));
 
@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
 
         if (lastValid)
         {
-            printf("[%f] (ok) > ", lastTime);
+            printf("[%lld.0] (ok) > ", (long long int)lastTime);
         }
         else
         {
-            printf("[%f] (skill issue) > ", lastTime);
+            printf("[%lld.0] (skill issue) > ", (long long int)lastTime);
             
         }
         
@@ -64,16 +64,19 @@ int main(int argc, char* argv[])
 
         int i = 0;
         int c;
-        while ((c = getchar()) != -1 && c != '\n' && i < 30) // -1 is End Of File (EOF)
+        while ((c = getchar()) != -1 && c != '\n' && c != '\0' && i < 30) // -1 is End Of File (EOF)
         {
             inp[i] = c;
             // printf("%c", c);
             i++;
         }
     
-        float start_time = time(NULL);
+        time_t start_time;
+        time(&start_time);
 
-        int errPos;
+
+
+        int errPos=0;
         struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
         parse_input(&inp[0], &parse, R, C, &errPos);
 
@@ -118,6 +121,8 @@ int main(int argc, char* argv[])
                 case 13:
                 displayC = parse.val1Col;
                 displayR = parse.val1Row;
+                break;
+                default:
                 break;
             }
             break;
@@ -246,11 +251,24 @@ int main(int argc, char* argv[])
                 break;
             }
         }
-
-        lastTime = time(NULL) - start_time;
+        time(&lastTime);
+        lastTime-=start_time;
+        // lastTime = (float)time(NULL) - start_time;
+        // printf("%f\n", start_time);
     }
     
-
+    Cell** temp=data;
+    for (int i = 0; i < R*C; i++)
+    {
+        if (*temp != NULL)
+        {
+            if((*temp)->children!=NULL) deleteTree((*temp)->children->root);
+            if((*temp)->func!=NULL) free((*temp)->func);
+            free(*temp);
+        }
+        temp++;
+    }
+    free(data);
     
 
 
