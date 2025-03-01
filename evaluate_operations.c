@@ -167,6 +167,7 @@ void calculate(Cell** data, Cell* cell, int R, int C) {
         val2 = func->value2;
     cell->valid = 1;
     switch (func->op) {
+        int val = 0;
         case FIX: 
             cell->value = val1; 
             break;
@@ -215,27 +216,27 @@ void calculate(Cell** data, Cell* cell, int R, int C) {
             break;
         }
         case MIN:
-            int val = min_eval(data, cell, func, R, C);
+            val = min_eval(data, cell, func, R, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;    
         case MAX:
-            int val = max_eval(data, cell, func, R, C);
+            val = max_eval(data, cell, func, R, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;
         case STDEV:
-            int val = stdev_eval(data, cell, func, R, C);
+            val = stdev_eval(data, cell, func, R, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;
         case SUM:
-            int val = sum_eval(data, cell, func, R, C);
+            val = sum_eval(data, cell, func, R, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;
         case AVG:
-            int val = avg_eval(data, cell, func, R, C);
+            val = avg_eval(data, cell, func, R, C);
             if(val == INT_MIN) cell->valid = 0;
             else cell->value = val;
             break;

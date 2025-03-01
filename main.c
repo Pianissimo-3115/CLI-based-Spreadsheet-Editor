@@ -18,7 +18,7 @@ Take input
 // void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
 
 
-int main()
+int main(int argc, char* argv[])
 {
 
     bool displayOn = true;
@@ -28,11 +28,13 @@ int main()
     float lastTime = 0.0;
     bool quit = false;
 
-    unsigned int R, C;
+    int R, C;
     char dummy;
-    scanf("%u", &R);
-    scanf("%u", &C);
-    scanf("%c", &dummy);
+    // scanf("%u", &R);
+    // scanf("%u", &C);
+    // scanf("%c", &dummy);
+    R = atoi(argv[1]);
+    C = atoi(argv[2]);
 
     Cell** data = (Cell**) calloc(R*C, sizeof(Cell*));
 
