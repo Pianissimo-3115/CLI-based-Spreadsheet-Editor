@@ -12,6 +12,9 @@ int min_eval(Cell** data,Cell* cell, Cell_func* func, int R, int C){
     int mini = INT_MAX;
     for (int i = cell1->col_name; i <=cell2->col_name; i++){
         for (int j = cell1->row_num; j <= cell2->row_num; j++){
+            if((*(data + C*(j-1) + i - 1))->valid == 0) {
+                return INT_MIN;
+            }
             mini = min(mini,(*(data + C*(j-1) + i - 1))->value);
             // (*(data + C*(i - 1) + j -1))->children->root=insert((*(data + C*(i - 1) + j -1))->children->root,cell);
         }        
@@ -25,6 +28,9 @@ int max_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
     int maxi = INT_MIN;
     for (int i = cell1->col_name; i <=cell2->col_name; i++){
         for (int j = cell1->row_num; j <= cell2->row_num; j++){
+            if((*(data + C*(j-1) + i - 1))->valid == 0) {
+                return INT_MIN;
+            }
             maxi = max(maxi,(*(data + C*(j-1) + i - 1))->value);
             // (*(data + C*(i - 1) + j -1))->children->root=insert((*(data + C*(i - 1) + j -1))->children->root,cell);
         }        
@@ -38,6 +44,9 @@ int sum_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
     int sum = 0;
     for (int i = cell1->col_name; i <=cell2->col_name; i++){
         for (int j = cell1->row_num; j <= cell2->row_num; j++){
+            if((*(data + C*(j-1) + i - 1))->valid == 0) {
+                return INT_MIN;
+            }
             sum += (*(data + C*(j - 1) + i - 1))->value;
             // (*(data + C*(i - 1) + j -1))->children->root=insert((*(data + C*(i - 1) + j -1))->children->root,cell);
         }        
@@ -52,6 +61,9 @@ int avg_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
     int count = 0;
     for (int i = cell1->col_name; i <=cell2->col_name; i++){
         for (int j = cell1->row_num; j <= cell2->row_num; j++){
+            if((*(data + C*(j-1) + i - 1))->valid == 0) {
+                return INT_MIN;
+            }
             sum += (*(data + C*(j - 1) + i - 1))->value;
             // (*(data + C*(i - 1) + j -1))->children->root=insert((*(data + C*(i - 1) + j -1))->children->root,cell);
             count++;
@@ -67,6 +79,9 @@ int stdev_eval(Cell** data, Cell* cell, Cell_func* func, int R, int C){
     int count = 0;
     for (int i = cell1->col_name; i <=cell2->col_name; i++){
         for (int j = cell1->row_num; j <= cell2->row_num; j++){
+            if((*(data + C*(j-1) + i - 1))->valid == 0) {
+                return INT_MIN;
+            }
             count++;
             sum += (*(data + C*(j - 1) + i - 1))->value;
             // (*(data + C*(i - 1) + j -1))->children->root=insert((*(data + C*(i - 1) + j -1))->children->root,cell);
@@ -156,53 +171,73 @@ void calculate(Cell** data, Cell* cell, int R, int C) {
             cell->value = val1; 
             break;
         case ADD: {
-            cell->value = val1 + val2;
-
+            if((func->flag1 && (func->Cell1->valid == 0)) || (func->flag2 && (func->Cell2->valid == 0))) cell->valid = 0;
+            else cell->value = val1 + val2;
             // if(func->flag1) func->Cell1->children->root = insert(func->Cell1->children->root, cell);
             // if(func->flag2) func->Cell2->children->root = insert(func->Cell2->children->root, cell);
             break;
         }
         case SUB: {
-            cell->value = val1 - val2; 
+            if((func->flag1 && (func->Cell1->valid == 0)) || (func->flag2 && (func->Cell2->valid == 0))) cell->valid = 0;
+            else cell->value = val1 - val2; 
             // if(func->flag1) func->Cell1->children->root = insert(func->Cell1->children->root, cell);
             // if(func->flag2) func->Cell2->children->root = insert(func->Cell2->children->root, cell);
             break;
         }
         case MUL: {
-            cell->value = val1*val2; 
+            if((func->flag1 && (func->Cell1->valid == 0)) || (func->flag2 && (func->Cell2->valid == 0))) cell->valid = 0;
+            else cell->value = val1*val2; 
             // if(func->flag1) func->Cell1->children->root = insert(func->Cell1->children->root, cell);
             // if(func->flag2) func->Cell2->children->root = insert(func->Cell2->children->root, cell);
             break;
         }
         case DIV: {
+            if((func->flag1 && (func->Cell1->valid == 0)) || (func->flag2 && (func->Cell2->valid == 0))) {
+                cell->valid = 0; 
+                break;
+            }
             if(val2 == 0) cell->valid = 0;          //////////////////////////////////////////////////////// TO BE DISCUSSED IF WE HAVE TO PUT IN DEPENDENCY SET IN THIS CASE
             else {
                 cell->value = val1/val2;
                 // if(func->flag1) func->Cell1->children->root = insert(func->Cell1->children->root, cell);
                 // if(func->flag2) func->Cell2->children->root = insert(func->Cell2->children->root, cell);  
-            }
+            }            
             break;
         }
         case SLEEP: {                       ///////////////////////////////////////////////////////////////// HAVE TO MODIFY THIS: SLEEP CAN ALSO REQUIRE ADDRESS INSTEAD OF FIX VAL. ALSO INSERT IN AVL TREE IN THAT CASE
+            if((func->flag1 && (func->Cell1->valid == 0)) || (func->flag2 && (func->Cell2->valid == 0))) {
+                cell->valid = 0; 
+                break;
+            }
             sleep(val1);
             cell->value = val1;
             // if(func->flag1) func->Cell1->children->root = insert(func->Cell1->children->root, cell);
             break;
         }
         case MIN:
-            cell->value = min_eval(data, cell, func, R, C); 
+            int val = min_eval(data, cell, func, R, C);
+            if(val == INT_MIN) cell->valid = 0;
+            else cell->value = val;
             break;    
         case MAX:
-            cell->value = max_eval(data, cell, func, R, C); 
+            int val = max_eval(data, cell, func, R, C);
+            if(val == INT_MIN) cell->valid = 0;
+            else cell->value = val;
             break;
         case STDEV:
-            cell->value = stdev_eval(data, cell, func, R, C); 
+            int val = stdev_eval(data, cell, func, R, C);
+            if(val == INT_MIN) cell->valid = 0;
+            else cell->value = val;
             break;
         case SUM:
-            cell->value = sum_eval(data, cell, func, R, C); 
+            int val = sum_eval(data, cell, func, R, C);
+            if(val == INT_MIN) cell->valid = 0;
+            else cell->value = val;
             break;
         case AVG:
-            cell->value = avg_eval(data, cell, func, R, C); 
+            int val = avg_eval(data, cell, func, R, C);
+            if(val == INT_MIN) cell->valid = 0;
+            else cell->value = val;
             break;
     }
 }
@@ -288,7 +323,6 @@ int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stac
         }
         curr = curr->next; 
     }
-    // function to be implemented
     hash_insert(visited, current_cell);
     hash_remove(recStack, current_cell); // Remove node from recursion stack
     push(stack, current_cell); 
