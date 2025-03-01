@@ -85,8 +85,12 @@ void free_table(HashTable *ht) {
     if (!ht)
         return;
     for (int i = 0; i < ht->size; i++) {
-        freeLinkedList(*((ht->table)+i));
+        if(*((ht->table)+i)) freeLinkedList(*((ht->table)+i));
+        // printf("ht->table: %p\n", ht->table);
+        // printf("ht->table[i]: %p\n", ht->table[i]);
+        // printf("(ht->table) + i: %p\n", (ht->table)+i);
     }
+    free(ht->table);
     free(ht);
 }
 // #ifndef MAIN

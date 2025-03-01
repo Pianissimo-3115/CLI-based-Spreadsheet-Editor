@@ -30,7 +30,7 @@ Cell* pop(Stack* stack) {
     ll_Node* temp = stack->top;
     Cell* poppedData = temp->data;
     stack->top = stack->top->next;
-    free(temp);
+    if(temp) free(temp);
     return poppedData;
 }
 
@@ -40,13 +40,13 @@ void freeStack(Stack* stack) {
     ll_Node* nextNode;
 
     // Traverse and free each node
-    while (current != NULL) {
+    while (current) {
         nextNode = current->next;
         free(current);        // Free the node itself
         current = nextNode;
     }
 
-    free(stack);  // Free the stack structure
+    // free(stack);  // Free the stack structure
 }
 void testStack() {
     printf("Running Stack Test...\n");

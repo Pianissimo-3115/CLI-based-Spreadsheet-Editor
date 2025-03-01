@@ -113,7 +113,7 @@ Node* erase(Node* root, Cell* element) {
                 root = NULL;
             } else
                 *root = *temp;
-            free(temp);
+            if(temp) free(temp);
         } else {
             Node* temp = min_value_node(root->right);
             root->element = temp->element;

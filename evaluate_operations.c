@@ -316,10 +316,25 @@ int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stac
     ll_Node* curr = *temp;
     while (curr) {
         if (hash_search(recStack, curr->data)) {
+            ll_Node** old_temp=temp;
+            if(temp!=NULL) while(*temp != NULL) {              // this frees the linkedlist
+                ll_Node* temp2 = *temp;
+                *temp = (*temp)->next;
+                free(temp2);
+            }
+            if(old_temp!=NULL) free(old_temp);
             return 1; 
         } 
         else if (!hash_search(visited, curr->data)) {
             if (dfs(curr->data, visited, recStack, stack)) {
+
+                ll_Node** old_temp=temp;
+                if(temp!=NULL) while(*temp != NULL) {              // this frees the linkedlist
+                    ll_Node* temp2 = *temp;
+                    *temp = (*temp)->next;
+                    free(temp2);
+                }
+                if(old_temp!=NULL) free(old_temp);
                 return 1; 
             }
         }
@@ -328,12 +343,13 @@ int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stac
     hash_insert(visited, current_cell);
     hash_remove(recStack, current_cell); // Remove node from recursion stack
     push(stack, current_cell); 
-    while(*temp != NULL) {              // this frees the linkedlist
+    ll_Node** old_temp=temp;
+    if(temp!=NULL) while(*temp != NULL) {              // this frees the linkedlist
         ll_Node* temp2 = *temp;
         *temp = (*temp)->next;
         free(temp2);
     }
-    free(temp);
+    if(old_temp!=NULL) free(old_temp);
     return 0;
 }
 
@@ -350,6 +366,7 @@ ll_Node* topological_sort(Cell* current_cell){
         freeStack(stack);
         free_table(visited);
         free_table(recStack);
+        if(stack) free(stack);
         // free(head);
         return NULL;
     }
@@ -372,9 +389,10 @@ ll_Node* topological_sort(Cell* current_cell){
     free_table(visited);
     free_table(recStack);
     ll_Node* ret=stack->top;
-    free(stack);
-    // free(head);
     // freeStack(stack);
+
+    if(stack) free(stack);
+    // free(head);
     return ret;
 }
 
@@ -407,7 +425,9 @@ int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C) {
         Cell_func* func=cell->func;
         cell->func=old_func;
         evaluate(data,cell,func,R,C);
+        return 0;
     }
+    if(old_func!=NULL) free(old_func);
     return x;
 }
 

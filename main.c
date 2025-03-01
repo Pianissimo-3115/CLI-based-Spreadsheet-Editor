@@ -260,10 +260,13 @@ int main(int argc, char* argv[])
     Cell** temp=data;
     for (int i = 0; i < R*C; i++)
     {
-        if (*temp != NULL)
+        if (*temp)
         {
-            if((*temp)->children!=NULL) deleteTree((*temp)->children->root);
-            if((*temp)->func!=NULL) free((*temp)->func);
+            if((*temp)->children) {
+                deleteTree((*temp)->children->root);
+                free((*temp)->children);
+            }
+            if((*temp)->func) free((*temp)->func);
             free(*temp);
         }
         temp++;
