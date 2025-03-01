@@ -69,6 +69,8 @@ int main()
             i++;
         }
     
+        float start_time = time(NULL);
+
         int errPos;
         struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
         parse_input(&inp[0], &parse, R, C, &errPos);
@@ -154,8 +156,8 @@ int main()
             
                                 val = (Cell*)  malloc(sizeof(Cell));
                                 *(data + C*(i-1) + j - 1) = val;
-                                val -> col_name = i;
-                                val -> row_num = j;
+                                val -> col_name = j;
+                                val -> row_num = i;
                                 val -> value = 0;
                                 val -> valid = true;
                                 val -> children = (AVL* ) malloc(sizeof(AVL));
@@ -243,6 +245,7 @@ int main()
             }
         }
 
+        lastTime = time(NULL) - start_time;
     }
     
 

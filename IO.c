@@ -1,34 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include"cell_operations.h"
-// #include<stdbool.h>
-// #include<string.h>
 
-// #define dtype struct cell
-// typedef enum inputType {Invalid, Movement, Assignment, Display} inputType;
-
-// bool { true = 1, false = 0};
-
-// struct addr /*  Not Done/Temp  */
-// {
-//     int col;
-//     int row;
-// };
-
-// struct cell /*  Not Done/Temp  */
-// {
-//     struct addr address;
-//     int val;
-// };
-
-// emptycell = (struct cell) {0,0};
-
-// void mainloop(int* data, int R, int C) /*  Not Done/Temp  */
-// {
-//     char cmd[50];
-//     scanf("%s", cmd);
-
-// }
 
 bool check_chars_equal(char* str1, char* str2, int n)
 {
@@ -43,31 +16,6 @@ bool check_chars_equal(char* str1, char* str2, int n)
     
 } 
 
-// int row_int_from_chars(char* chars)
-// {
-//     int out = 0;
-//     for (int i = 0; i < 3; i++)
-//     {
-//         if (*(chars+i) != '\0')
-//         {
-//             out = out*10 + *(chars+i)-'0';
-//         }
-//     }
-//     return out;
-// }
-
-// int col_int_from_chars(char* chars)
-// {
-//     int out = 0;
-//     for (int i = 0; i < 3; i++)
-//     {
-//         if (*(chars+i) != '\0')
-//         {
-//             out = out*26 + *(chars+i)-'A'+1;
-//         }
-//     }
-//     return out;
-// }
 
 void col_chars_from_int(int col, char* out)
 {
@@ -96,29 +44,6 @@ void col_chars_from_int(int col, char* out)
     //Wrong input
 }
 
-// struct parsedInput
-// {
-//     inputType inpType;
-
-//     ops operation;
-
-//     bool val1Type; // 1 if address, 0 if int
-//     int val1Col;
-//     int val1Row;
-//     int val1Int;
-//     // char val1Addr[6];
-
-//     bool val2Type;
-//     int val2Col;
-//     int val2Row;
-//     int val2Int;
-//     // char val2Addr[6];
-
-//     int targetCol;
-//     int targetRow;
-//     // char target[6];
-
-// };
 
 
 bool is_up_char(char ch)
@@ -136,6 +61,7 @@ bool is_digit(char ch)
 1 : Address out of range
 2 : Range is invalid (opposite order)
 */
+
 void fetch_addr(char* instr, int* row_out, int* col_out, int* len_out)
 {
     int row = 0;
