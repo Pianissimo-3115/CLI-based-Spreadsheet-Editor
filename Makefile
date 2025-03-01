@@ -22,15 +22,15 @@ DEPS = cell_operations.h data_structures.h
 %.o: %.c $(DEPS)
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
-sheet: $(OBJ)
+target/release/spreadsheet: $(OBJ)
 	@$(CC) -o $@ $^ -lm 
 
-run: sheet
-	@./sheet $(a) $(b)
+run: target/release/spreadsheet
+	@./target/release/spreadsheet $(a) $(b)
 
 debug:
-	@$(CC) -g $(SRC) -o sheet.exe -lm
-	@gdb sheet.exe
+	@$(CC) -g $(SRC) -o target/release/spreadsheet.exe -lm
+	@gdb target/release/spreadsheet.exe
 	
 clean:
-	@rm -f sheet sheet.exe *.o
+	@rm -f target/release/spreadsheet target/release/spreadsheet.exe *.o
