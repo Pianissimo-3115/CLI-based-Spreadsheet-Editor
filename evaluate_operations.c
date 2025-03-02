@@ -101,8 +101,8 @@ void remove_old_dependencies(Cell** data, Cell_func* old_func, Cell* cell, int C
     if(old_func->op>5){             // is a range function
         Cell* start=old_func->Cell1;
         Cell* end=old_func->Cell2;
-        for (int col = start->col_name; col < end->col_name; col++) {
-            for (int row = start->row_num; row < end->row_num ; row++) {
+        for (int col = start->col_name; col <= end->col_name; col++) {
+            for (int row = start->row_num; row <= end->row_num ; row++) {
                 ((*(data + C*(row - 1) + col - 1))->children)->root=
                     erase(((*(data + C*(row - 1) + col - 1))->children)->root, cell);       // erase from non existent (old) dependency
             }
@@ -289,6 +289,7 @@ ll_Node* topological_sort(Cell* current_cell){
 
 int update_children(Cell** data, Cell* cell, int C) {
     ll_Node* head = topological_sort(cell);
+    
     if(head == NULL) return 0;
     bool negative_in_sleep = false;
     while (head != NULL) {

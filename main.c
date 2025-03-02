@@ -22,19 +22,36 @@ Take input
 int main(int argc, char* argv[])
 {
 
+    if (argc != 3){
+        printf("ERROR: Input should be of the form  > executable_name.exe [num_cols] [num_rows]\n");
+        return 0;
+    }
+
     bool displayOn = true;
     int displayR = 1;
     int displayC = 1;
     bool lastValid = true;
+    char errorText[50] = "";
     time_t lastTime = 0;
     bool quit = false;
-
+    // int* errPos=malloc(sizeof(int));
+    // *errPos = 0;
     int R, C;
     // scanf("%u", &R);
     // scanf("%u", &C);
     // scanf("%c", &dummy);
     R = atoi(argv[argc-2]);
     C = atoi(argv[argc-1]);
+
+    
+    if (R < 1 || R > 999) {
+        printf("ERROR: Row must be between 1 and 999\n");
+        return 0;
+    }
+    if (C < 1 || C > 18278) {
+        printf("ERROR: Col must be between 1 and 18278\n");
+        return 0;
+    }
 
     Cell** data = (Cell**) calloc(R*C, sizeof(Cell*));
 
@@ -52,7 +69,7 @@ int main(int argc, char* argv[])
         }
         else
         {
-            printf("[%lld.0] (skill issue) > ", (long long int)lastTime);
+            printf("[%lld.0] (skill issue: %s) > ", (long long int)lastTime, errorText);
             
         }
         
@@ -76,13 +93,27 @@ int main(int argc, char* argv[])
 
 
 
-        int errPos=0;
         struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
-        parse_input(&inp[0], &parse, R, C, &errPos);
+
+        parse_input(&inp[0], &parse, R, C);
 
         if (parse.inpType == Invalid)
         {
             lastValid = false;
+            switch (parse.val1Int)
+            {
+                case 0: 
+                sprintf(errorText, "Invalid syntax at pos %d", parse.val2Int);
+                break;
+                case 1: 
+                sprintf(errorText, "Addr out of range at pos %d", parse.val2Int);
+                break;
+                case 2: 
+                sprintf(errorText, "Range End is lesser than Range Start at pos %d", parse.val2Int);
+                break;
+                default:
+                break;
+            }
         }
         else
         {
@@ -99,10 +130,10 @@ int main(int argc, char* argv[])
                     displayC = max(1, displayC - 10);
                     break;
                     case 2:
-                    displayR = min(R, displayR + 10);
+                    displayR = max(min(R - windowHeight + 1, displayR + 10), 1);
                     break;
                     case 3:
-                    displayC = min(C, displayC + 10);
+                    displayC = max(min(C - windowWidth + 1, displayC + 10), 1);
                     break;
                     case 4:
                     quit = true;
@@ -239,6 +270,7 @@ int main(int argc, char* argv[])
                 if (x==0)
                 {
                     lastValid = false;
+                    sprintf(errorText, "Loop detected, all chagnes reverted");
                 }
                 else
                 {
@@ -257,6 +289,7 @@ int main(int argc, char* argv[])
         // printf("%f\n", start_time);
     }
     
+    // free(errPos);
     Cell** temp=data;
     for (int i = 0; i < R*C; i++)
     {

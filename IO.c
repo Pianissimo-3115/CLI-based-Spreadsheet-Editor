@@ -98,9 +98,9 @@ void fetch_addr(char* instr, int* row_out, int* col_out, int* len_out)
     return;
 }
 
-void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos)
+void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C)
 {
-    errPos++;
+
     char checkdisable[15] = "disable_output\0";
     char checkenable[14] = "enable_output\0";
     char checkgoto[10] = "scroll_to ";
@@ -134,6 +134,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
+            (*parsed_out).val2Int = rangeStart;
             return;
         }
 
@@ -141,6 +142,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
+            (*parsed_out).val2Int = rangeStart + addrLen;
             return;
         }
 
@@ -148,6 +150,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 1; //Address out of range
+            (*parsed_out).val2Int = rangeStart;
             return;
         }
 
@@ -191,6 +194,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
+            (*parsed_out).val2Int = 0;
         } 
         return;
         
@@ -210,6 +214,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
+            (*parsed_out).val2Int = 0;
             return;
         }
 
@@ -217,6 +222,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 0; //Invalid syntax
+            (*parsed_out).val2Int = addrLen;
             return;
         }
 
@@ -224,6 +230,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
         {
             parsed_out -> inpType = Invalid;
             parsed_out -> val1Int = 1; //Address out of range
+            (*parsed_out).val2Int = 0;
             return;
         }
         //Target parsed successfully
@@ -308,6 +315,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; //Invalid syntax
+                    (*parsed_out).val2Int = rangeStart;
                     return;
                 }
 
@@ -315,6 +323,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 1; //Address out of range
+                    (*parsed_out).val2Int = rangeStart;
                     return;
                 }
                 
@@ -328,6 +337,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = rangeStart;
                 return;
             }
 
@@ -335,6 +345,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = rangeStart + val1Len;
                 return;
             }
 
@@ -342,6 +353,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = rangeStart + val1Len + 1;
                 return;
             }
 
@@ -363,6 +375,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = rangeStart;
                 return;   
             }
 
@@ -370,6 +383,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = rangeStart + val1Len;
                 return;
             }
 
@@ -377,6 +391,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 1; //Address out of range
+                (*parsed_out).val2Int = rangeStart;
                 return;
             }
 
@@ -393,6 +408,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = rangeEnd;
                 return;
             }
 
@@ -400,6 +416,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = rangeEnd + val2Len;
                 return;
             }
 
@@ -407,6 +424,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 1; //Address out of range
+                (*parsed_out).val2Int = rangeEnd;
                 return;
             }
 
@@ -414,6 +432,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 2; //Range is opposite;
+                (*parsed_out).val2Int = rangeEnd;
                 return;
             }
 
@@ -462,6 +481,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; //Invalid syntax
+                    (*parsed_out).val2Int = exprStart;
                     return;
                 }
 
@@ -469,6 +489,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 1; //Address out of range
+                    (*parsed_out).val2Int = exprStart;
                     return;
                 }
                 
@@ -481,6 +502,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out -> inpType = Invalid;
                 parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = exprStart;
                 return;
             }
             
@@ -488,7 +510,6 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                 parsed_out->inpType = Assignment;
                 parsed_out -> operation = FIX;
-
                 return;
             }
             
@@ -516,6 +537,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
             {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; //Invalid syntax
+                    (*parsed_out).val2Int = exprStart + val1Len;
                     return;      
             }
             
@@ -555,6 +577,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; //Invalid syntax
+                    (*parsed_out).val2Int = exprSecond;
                     return;
                 }
 
@@ -562,6 +585,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 1; //Address out of range
+                    (*parsed_out).val2Int = exprSecond;
                     return;
                 }
                 
@@ -570,11 +594,20 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
                 parsed_out -> val2Row = val2Row;
                 
             }
+            else //It was an assignment but followup was not correct
+            {
+                parsed_out -> inpType = Invalid;
+                parsed_out -> val1Int = 0; //Invalid syntax
+                (*parsed_out).val2Int = exprSecond;
+                return;
+            }
+
 
             if (inp[exprSecond + val2Len] != '\0')
             {
                     parsed_out -> inpType = Invalid;
                     parsed_out -> val1Int = 0; // Wrong Syntax
+                    (*parsed_out).val2Int = exprSecond + val2Len;
                     return;
             }
 
@@ -587,6 +620,7 @@ void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* e
     {
             (*parsed_out).inpType = Invalid;
             (*parsed_out).val1Int = 0; //Invalid syntax
+            (*parsed_out).val2Int = 0;
             return;
     }
     

@@ -1,14 +1,24 @@
-#include "IO.c"
+#include "../cell_operations.h"
+#include<stdio.h>
+#include<string.h>
+
+// struct parsedInput;
+// void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
+
+void parsed_to_command(struct parsedInput* parse, char* command_out)
+
+
 
 int main()
 {
+    printf("\n**IO Tester Started**\n");
     FILE *file_ptr;
-    file_ptr = fopen("IOtestcases.txt", "r");
+    file_ptr = fopen("tests/IOtestcases.txt", "r");
     int R = 1000;
     int C = 19000;
     if (file_ptr == NULL)
     {
-        printf("Test file could not be opened.");
+        printf("Test file could not be opened.\n");
         return 0;
     }
 
