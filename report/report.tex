@@ -1,0 +1,200 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{listings}
+\usepackage{color}
+\usepackage{geometry}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, arrows.meta}
+\geometry{margin=1in}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+
+\title{COP290 C Lab}
+\author{Arjun Sammi: 2023CS50163; Popat Nihal Alkesh: 2023CS10058; Viraaj Narolia: 2023CS10552}
+\date{March 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Frontend}
+\subsection{Input Parser}
+The input parser takes as input the input command, the number of rows, the number of columns, and a pointer to a \lstinline{struct parsedInput}:
+\begin{lstlisting}
+typedef enum ops { FIX, SLEEP, ADD, SUB, MUL, DIV, MIN, MAX, STDEV, SUM, AVG, DISABLE_OUT, ENABLE_OUT, SCROLL } ops;
+typedef enum inputType {Invalid, Movement, Assignment, Display} inputType;
+struct parsedInput
+{
+    inputType inpType;
+    ops operation;
+
+    bool val1Type; // 1 if address, 0 if int
+    int val1Col; 
+    int val1Row;
+    int val1Int; // May carry error code (if input is invalid)
+
+    bool val2Type;
+    int val2Col;
+    int val2Row;
+    int val2Int; // May carry error position (if input is invalid)
+
+    int targetCol;
+    int targetRow;
+};
+
+void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C)
+\end{lstlisting}
+The function will update the struct at the pointer given to the correct value. \lstinline{targetcol} \& \lstinline{targetRow} contain the target cell details.
+\begin{itemize}
+    \item For FIX type (direct value), \lstinline{val1Int} contains the value.
+    \item For arithmetic operations \lstinline{val1} and \lstinline{val2} contain the required information.
+    \item For range operations, \lstinline{val1} and \lstinline{val2} contain the range endpoints
+    \item For single letter commands, \lstinline{val1Int} contains 1,2,3,4,5 for w,a,s,d,q respectively.
+    \item For display commands, the command is in \lstinline{operation}, and the target cell is stored if required.
+    \item In case of an error during parsing, \lstinline{val1Int} stores the code (0: Invalid Syntax, 1: Address out of range, 2: Range query is not in increasing order). \lstinline{val2Int} stores the position (character index) at which error occured.
+\end{itemize}
+
+\subsection{Display}
+\begin{lstlisting}
+#define windowWidth  10
+#define windowHeight 10
+void display_window(Cell** data, int currR, int currC, int R, int C);
+\end{lstlisting}
+The \lstinline{display_window} command takes the \lstinline{data}, \lstinline{currC} \& \lstinline{currR}, and \lstinline{C} \& \lstinline{R}, and then prints a window of the sheet such that \lstinline{currC} and \lstinline{currR} is the first cell displayed (top left). The logic for which cell should be at the top left is handled outside. The window height and width defined in the header file. If the window extends outside the sheet (near the right or bottom edge), then it shows as much as possible, though whether or not this would be allowed is handled outside the function by setting \lstinline{currR} and \lstinline{currC} appropriately.
+\section{Evaluation}
+\subsection{Data structures used}
+\begin{enumerate}
+    \item AVL Tree (self balancing BST):
+    \item Hash Table
+    \item Linked List
+    \item Stack
+\end{enumerate}
+\subsection{Overview}
+To store the sheet, we have created two structs, \textquoteleft \lstinline{Cell}\textquoteright 
+ \ and \textquoteleft \lstinline{Cell_func}\textquoteright. In these structs, we have used \textbf{Bitfields} to optimize memory usage. We are storing the parents (dependencies) of the current cell in an AVL tree whose pointer is a member of the struct Cell (AVL tree was used to optimize removal of old dependencies when an operation is modified in O(logn) time complexity). 
+
+ \begin{lstlisting}
+ struct Cell {
+    int col_name: 8;           
+    int row_num: 8;
+    int value; 
+    int valid: 16;                      
+    Cell_func *func;
+    AVL* children;
+};
+struct Cell_func {
+    union {
+        int value1;
+        Cell* Cell1;
+    };
+    union {
+        int value2;
+        Cell* Cell2;
+    };
+    bool flag1, flag2;              // FOR BOTH FLAGS: 1 MEANS CELL, 0 MEANS VALUE/NONE
+    ops op;        
+};
+
+// MAIN FUNCTION THAT WOULD BE CALLED BY MAIN FUNCTION
+int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C);   
+
+// FOR RECALCULATING VALUE OF CELL AND ITS DEPENDENTS
+update_children(Cell** data, Cell* cell, int C);    
+
+ll_Node* topological_sort(Cell* current_cell);
+int dfs(Cell* current_cell, HashTable* visited, HashTable* recStack, Stack *stack);
+
+// ADDING NEW DEPENDENCIES TO AVL TREE OF CELL
+void update_parent_avls(Cell** data, Cell *cell, int C);
+
+// IT JUST TAKES IN A SINGLE CELL AND RECALCULATES ITS VALUE USING cell->func
+void calculate(Cell** data, Cell* cell, int C);
+
+// USED TO REMOVE DEPENDENCIES THAT WERE CAUSED BY OLD OPERATION old_func
+void remove_old_dependencies(Cell** data, Cell_func* old_func, Cell* cell, int C);
+
+\end{lstlisting}
+\subsection{Pathway}
+\begin{enumerate}
+    \item Clear old operation (if any)
+    \item Initialize dependencies due to new operation
+    \item Recalculate the cell and its dependents
+    \item Loop detection
+
+\end{enumerate}
+\subsubsection{Clear old operations}
+When there is an operation assignment, we must check if there was earlier some other operation assigned to the cell, that is, removing old dependencies from AVL. 
+\subsubsection{Initialize dependencies due to new opeartion}
+Similar to previous function, this only includes inserting new dependencies to AVL of the current cell.
+\subsubsection{Recalculate the cell and its dependencies}
+We have used \textbf{Topological sort} algorithm to implement recalculations. The idea behind this was that topological sort, when applied on a directed graph, gives us a linked list that contains nodes in a particular order, such that there are no back-edges, i.e. there won't exist any cell whose dependencies come after itself in order. This is crucial as, when some cell is updated, we would like to recalculate its dependents such that we would only have to calculate them once and get correct values. 
+\\ \\
+For topological sort, we need some data structure that can store all the cells visited in front edges, as well as possibility of some back edges (loop in the logic of operations, where we would reject the latest operation and revert the changes). For the same, we have used two hash tables that would store pointers to visited cells. This was done to ensure optimized insertion and deletion functions. We have also used stack data structure, that was used for DFS (Depth first search) algorithm that is used in topological sort, as well as converting recursive functions DFS and topological sort to iterative (to prevent stack overflow).
+\\ \\ 
+Topological sort would return a linked list in the desired order. The order given by it would then be followed while recalculating values.
+\\ \\ 
+Note: There are three possible recalculation time errors, Division by zero error, Loop error, and negative input in sleep operation. In loop detection and negative input in sleep operation, the latest operation would be rejected, and in Division by zero error, the affected cells would store \textquoteleft ERR\textquoteright.
+
+\subsubsection{Loop Detection}
+As mentioned above, the \textquoteleft calculate\textquoteright \ function would use topological sort which would further use DFS. In this process, we are using two hash tables, of which one is used primarily for loop (circular dependency) detection. In that case, old function would simply be restored.
+
+
+\tikzset{startstop/.style=[rectangle, rounded corners, minimum width=1.6cm, minimum height=0.8cm,text centered, draw=black, fill=red!30]}
+\tikzset{process/.style=[rectangle, minimum width=1.6cm, minimum height=0.6cm, text centered, draw=black, fill=blue!20]}
+\tikzset{decision/.style=[diamond, minimum width=1.2cm, minimum height=0.6cm, text centered, draw=black, fill=yellow!20]}
+\tikzset{arrow/.style=[thick,->,>=stealth]}
+\tikzset{dashedarrow/.style=[thick,dashed,->,>=stealth]}
+
+\begin{figure}[h]
+    \centering
+\begin{tikzpicture}[node distance=1.6cm]
+    
+    \node (start) [startstop] {Start};
+    \node (init) [process, below of=start] {Initialise};
+    \node (display) [process, below of=init] {Display window};
+    \node (parse) [process, below of=display] {Parse input};
+    \node (valid) [decision, below of=parse, yshift=-0.5cm] {Input valid?};
+    \node (remove) [process, below of=valid, yshift=-0.5cm] {Remove old dependencies};
+    \node (updateparent) [process, below of=remove] {Update parent dependencies};
+    \node (updatechild) [process, below of=updateparent] {Update children};
+    \node (decision) [decision, below of=updatechild, yshift=-0.5cm] {Loop detected?};
+    
+    \draw [arrow] (start) -- (init);
+    \draw [arrow] (init) -- (display);
+    \draw [arrow] (display) -- (parse);
+    \draw [arrow] (parse) -- (valid);
+    \draw [arrow] (valid.south) -- (remove.north) node[midway, right] {Yes};
+    \draw [arrow] (valid.west) -- ++(-2,0) node[midway, above] {No} |- (display.west);
+    \draw [arrow] (remove) -- (updateparent);
+    \draw [arrow] (updateparent) -- (updatechild);
+    \draw [arrow] (updatechild) -- (decision);
+    
+    % Arrows for decision node
+    \draw [dashedarrow] (decision.west) -- ++(-2,0) node[midway, above] {Yes, Reset} |- (remove.west);
+    \draw [arrow] (decision.east) -- ++(2,0) node[midway, above] {No} |- (display.east);
+\end{tikzpicture}
+\caption{Program Control Flow}
+    \label{fig:control_flowchart}
+\end{figure}
+\end{document}
+
