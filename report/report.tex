@@ -4,6 +4,7 @@
 \usepackage{color}
 \usepackage{geometry}
 \usepackage{tikz}
+\usepackage{url}
 \usetikzlibrary{shapes.geometric, arrows, arrows.meta}
 \geometry{margin=1in}
 
@@ -149,7 +150,7 @@ Similar to previous function, this only includes inserting new dependencies to A
 \subsubsection{Recalculate the cell and its dependencies}
 We have used \textbf{Topological sort} algorithm to implement recalculations. The idea behind this was that topological sort, when applied on a directed graph, gives us a linked list that contains nodes in a particular order, such that there are no back-edges, i.e. there won't exist any cell whose dependencies come after itself in order. This is crucial as, when some cell is updated, we would like to recalculate its dependents such that we would only have to calculate them once and get correct values. 
 \\ \\
-For topological sort, we need some data structure that can store all the cells visited in front edges, as well as possibility of some back edges (loop in the logic of operations, where we would reject the latest operation and revert the changes). For the same, we have used two hash tables that would store pointers to visited cells. This was done to ensure optimized insertion and deletion functions. We have also used stack data structure, that was used for DFS (Depth first search) algorithm that is used in topological sort, as well as converting recursive functions DFS and topological sort to iterative (to prevent stack overflow).
+For topological sort, we need some data structure that can store all the cells visited in front edges, as well as possibility of some back edges (loop in the logic of operations, where we would reject the latest operation and revert the changes). For the same, we have used two hash tables that would store pointers to visited cells. This was done to ensure optimized insertion and deletion functions. We have also used stack data structure, that was used for DFS (Depth first search) algorithm that is used in topological sort.
 \\ \\ 
 Topological sort would return a linked list in the desired order. The order given by it would then be followed while recalculating values.
 \\ \\ 
@@ -196,5 +197,12 @@ As mentioned above, the \textquoteleft calculate\textquoteright \ function would
 \caption{Program Control Flow}
     \label{fig:control_flowchart}
 \end{figure}
+\section{References}
+
+\begin{enumerate}
+    \item \url{https://github.com/Pianissimo-3115/lab1_2023CS10058_2023CS10552_2023CS50163}
+    \item \url{https://drive.google.com/drive/u/0/folders/1s-0H2u_o2cJz5sC_lQ1XjfFznaTQIBWn}
+\end{enumerate}
+
 \end{document}
 
