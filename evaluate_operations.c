@@ -82,14 +82,15 @@ int stdev_eval(Cell** data, Cell_func* func, int C){
             sum += (*(data + C*(j - 1) + i - 1))->value;
         }        
     }
-    long double mean = sum/count;
-    long double sum_sq = 0;
+    int mean = sum/count;
+    double variance = 0.0;
     for (int i = cell1->col_name; i <=cell2->col_name; i++){
         for (int j = cell1->row_num; j <= cell2->row_num; j++){
-            sum_sq += pow((*(data + C*(j - 1) + i - 1))->value - mean, 2);
+            variance += ((*(data + C*(j - 1) + i - 1))->value - mean)*((*(data + C*(j - 1) + i - 1))->value - mean);
         }        
     }
-    return sqrt(sum_sq/count);
+    variance = variance/count;
+    return (int) round(sqrt(variance));
 }
 void sleep(int seconds) {
     time_t start_time = time(NULL);
