@@ -20,8 +20,8 @@ typedef enum ops {
 
 
 struct Cell {
-    int col_name: 8;           
-    int row_num: 8;
+    int col_name: 16;           
+    int row_num: 16;
     int value; 
     int valid: 16;                      
     Cell_func *func;

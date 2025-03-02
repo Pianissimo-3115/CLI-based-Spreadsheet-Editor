@@ -33,8 +33,16 @@ debug:
 	@gdb target/release/spreadsheet.exe
 	
 clean:
-	@rm -f target/release/spreadsheet target/release/spreadsheet.exe *.o
+	@rm -f target/release/spreadsheet target/release/spreadsheet.exe *.o report/report.pdf report/*.aux report/*.log report/*.bbl report/*.blg report/*.out report/*.toc report/*.lof report/*.lot report/*.nav report/*.snm report/*.vrb
 
 test_%:
 	@$(CC) $(CFLAGS) -o test AVL.c stack.c linkedlist.c hash_table.c evaluate_operations.c IO.c ./tests/test_$*.c -lm
 	@./test
+
+report/report.pdf: report/report.tex
+	pdflatex -output-directory=report report/report.tex
+	bibtex report/report || true
+	pdflatex -output-directory=report report/report.tex
+	pdflatex -output-directory=report report/report.tex
+
+report: report/report.pdf
