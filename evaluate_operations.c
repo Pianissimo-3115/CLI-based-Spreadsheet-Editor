@@ -294,13 +294,13 @@ int update_children(Cell** data, Cell* cell, int C) {
     while (head != NULL) {
         Cell* element = head->data;
         if(element->func != NULL && element->func->op == SLEEP) {
-            if(element->func->flag1 && element->func->Cell1->value < 0) {
+            if(element->func->flag1 && (element->func->Cell1->value < 0)) {
                 negative_in_sleep = true;
             }
-            else if(element->func->flag2 && element->func->Cell2->value < 0) {
+            else if(element->func->flag2 && (element->func->Cell2->value < 0)) {
                 negative_in_sleep = true;
             }
-            else if(element->func->value1 < 0) {
+            else if((!element->func->flag1)&&(element->func->value1 < 0)) {
                 negative_in_sleep = true;
             }
         }

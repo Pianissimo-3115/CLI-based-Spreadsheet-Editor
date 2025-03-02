@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include "data_structures.h"
 
-#define TABLE_SIZE 503
-
 int hash(Cell* cell, int size) {
     return (cell->col_name+cell->row_num-2)%size;
 }
@@ -39,8 +37,8 @@ void hash_insert(HashTable *ht, Cell *cell) {
         }
         current = current->next;
     }
-    if(current==NULL) insertAtHead(ht->table+index, cell);
-    else insertAtPosition(current, cell);
+    insertAtHead(ht->table+index, cell);
+
 }
 
 void hash_remove(HashTable *ht, Cell *cell) {
@@ -51,19 +49,17 @@ void hash_remove(HashTable *ht, Cell *cell) {
     ll_Node *prev = NULL;
 
     while (current != NULL) {
-        ll_Node* temp=NULL;
         if (current->data == cell) {
             if (prev == NULL) {
                 ht->table[index] = current->next;
             } else {
                 prev->next = current->next;
             }
-            temp = current->next;
             free(current);
             return;
         }
         prev = current;
-        current = temp;
+        current = current->next;
     }
 
 }
@@ -86,34 +82,7 @@ void free_table(HashTable *ht) {
         return;
     for (int i = 0; i < ht->size; i++) {
         if(*((ht->table)+i)) freeLinkedList(*((ht->table)+i));
-        // printf("ht->table: %p\n", ht->table);
-        // printf("ht->table[i]: %p\n", ht->table[i]);
-        // printf("(ht->table) + i: %p\n", (ht->table)+i);
     }
     free(ht->table);
     free(ht);
 }
-// #ifndef MAIN
-// int main() {
-//     HashTable *ht = create_table(TABLE_SIZE);
-
-//     Cell cell1 = { .col_name = 1, .row_num = 1 };
-//     Cell cell2 = { .col_name = 2, .row_num = 2 };
-//     Cell cell3 = { .col_name = 3, .row_num = 3 };
-
-//     hash_insert(ht, &cell1);
-//     hash_insert(ht, &cell2);
-//     hash_insert(ht, &cell3);
-
-//     printf("Search cell1: %d\n", search(ht, &cell1));
-//     printf("Search cell2: %d\n", search(ht, &cell2));
-//     printf("Search cell3: %d\n", search(ht, &cell3));
-
-//     hash_remove(ht, &cell2);
-//     printf("Search cell2 after removal: %d\n", search(ht, &cell2));
-
-//     free_table(ht);
-
-//     return 0;
-// }
-// #endif

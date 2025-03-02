@@ -9,3 +9,4 @@ vc140.pdb
 *.obj
 *.pdb
 *.o
+target/release/*

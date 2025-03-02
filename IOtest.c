@@ -1,8 +1,4 @@
 #include "IO.c"
-// #include<stdio.h>
-
-// struct parsedInput;
-// void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
 
 int main()
 {

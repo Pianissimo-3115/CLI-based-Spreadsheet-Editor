@@ -70,28 +70,3 @@ void printLinkedList(ll_Node* head) {
     }
     printf("NULL\n");
 }
-// #ifndef MAIN
-// int main() {
-//     ll_Node* head = NULL;
-
-//     insertAtEnd(head, 10);
-//     insertAtEnd(head, 20);
-//     insertAtEnd(head, 30);
-
-//     printf("Before inserting at position:\n");
-//     printLinkedList(head);
-
-//     // Insert after the first node
-//     if (head != NULL) {
-//         insertAtPosition(head, 25);
-//     }
-
-//     printf("After inserting at position:\n");
-//     printLinkedList(head);
-
-//     // Free the memory
-//     freeLinkedList(head);
-
-//     return 0;
-// }
-// #endif

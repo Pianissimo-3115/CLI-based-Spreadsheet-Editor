@@ -26,7 +26,6 @@ struct Cell {
     int valid;                      
     Cell_func *func;
     AVL* children;
-    // short int run_cnt;
 };
 
 struct Cell_func {
@@ -54,20 +53,17 @@ struct parsedInput
     int val1Col;
     int val1Row;
     int val1Int;
-    // char val1Addr[6];
 
     bool val2Type;
     int val2Col;
     int val2Row;
     int val2Int;
-    // char val2Addr[6];
 
     int targetCol;
     int targetRow;
-    // char target[6];
 
 };
-void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
+void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C);
 void display_window(Cell** data, int currR, int currC, int R, int C);
 int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R ,int C);
 

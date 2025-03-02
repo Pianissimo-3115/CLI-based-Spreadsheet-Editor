@@ -27,7 +27,6 @@ Node* create_node(Cell* element);
 Node* insert(Node* root, Cell* element);
 Node* erase(Node* root, Cell* element);
 bool custom_comparator(Cell* element1, Cell* element2);
-// ll_Node* inorder(Node* root,ll_Node* head);
 void inorder(Node* root,ll_Node** head);
 void resetTree(AVL* avl);
 void deleteTree(Node* root);
@@ -47,11 +46,7 @@ typedef struct ll_Node {
     struct ll_Node* next;
 } ll_Node;
 
-// Define the linked list structure
-// struct LinkedList {
-//     ll_Node* head;
-// };
-
+// Linked list functions
 ll_Node* createNode(Cell* data);
 void insertAtEnd(ll_Node* head, Cell* data);
 void insertAtHead(ll_Node** head, Cell* data);
@@ -63,7 +58,7 @@ typedef struct {
     ll_Node **table;
     int size;
 } HashTable;
-#define TABLE_SIZE 503
+#define TABLE_SIZE 293
 int hash(Cell* cell, int size);
 HashTable* create_table(int size);
 void hash_insert(HashTable *ht, Cell *cell);
@@ -71,19 +66,7 @@ void hash_remove(HashTable *ht, Cell *cell);
 int hash_search(HashTable *ht, Cell* cell);
 void free_table(HashTable *ht);
 
-// stack structure
-// typedef struct Stack {
-//     int top;
-//     int capacity;
-//     Cell* (*array);
-// } Stack;
-
-// Stack *createStack();
-// void push(Stack *stack, Cell* item);
-// Cell* pop(Stack *stack);
-// int isEmpty(Stack *stack);
-
-
+// Stack operations
 typedef struct Stack {
     ll_Node* top;
 } Stack;
