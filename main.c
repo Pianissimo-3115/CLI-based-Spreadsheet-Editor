@@ -21,9 +21,9 @@ Take input
 
 int main(int argc, char* argv[])
 {
-
+    FILE* output = fopen("output.txt", "a");
     if (argc != 3){
-        printf("ERROR: Input should be of the form  > executable_name.exe [num_cols] [num_rows]\n");
+        fprintf(output, "ERROR: Input should be of the form  > executable_name.exe [num_cols] [num_rows]\n");
         return 0;
     }
 
@@ -45,11 +45,11 @@ int main(int argc, char* argv[])
 
     
     if (R < 1 || R > 999) {
-        printf("ERROR: Row must be between 1 and 999\n");
+        fprintf(output, "ERROR: Row must be between 1 and 999\n");
         return 0;
     }
     if (C < 1 || C > 18278) {
-        printf("ERROR: Col must be between 1 and 18278\n");
+        fprintf(output, "ERROR: Col must be between 1 and 18278\n");
         return 0;
     }
 
@@ -65,11 +65,12 @@ int main(int argc, char* argv[])
 
         if (lastValid)
         {
-            printf("[%lld.0] (ok) > ", (long long int)lastTime);
+            fprintf(output, "[%lld.0] (ok) > \n", (long long int)lastTime);
         }
         else
         {
-            printf("[%lld.0] (skill issue: %s) > ", (long long int)lastTime, errorText);
+            fprintf(output, "[%lld.0] (skill issue: %s) > \n", (long long int)lastTime, errorText);
+            break;
             
         }
         
@@ -94,7 +95,7 @@ int main(int argc, char* argv[])
 
 
         struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
-
+        fprintf(output, "\n%s\n", inp);
         parse_input(&inp[0], &parse, R, C);
 
         if (parse.inpType == Invalid)
@@ -305,7 +306,7 @@ int main(int argc, char* argv[])
         temp++;
     }
     free(data);
-    
+    // output.close();
 
 
 }
