@@ -271,7 +271,7 @@ int main(int argc, char* argv[])
                 if (x==0)
                 {
                     lastValid = false;
-                    sprintf(errorText, "Loop detected, all chagnes reverted");
+                    sprintf(errorText, "Evaluation failed, all chagnes reverted");
                 }
                 else
                 {

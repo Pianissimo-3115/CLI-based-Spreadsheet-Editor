@@ -2,11 +2,6 @@
 #include<stdio.h>
 #include<string.h>
 
-// struct parsedInput;
-// void parse_input(char* inp, struct parsedInput* parsed_out, int R, int C, int* errPos);
-
-void parsed_to_command(struct parsedInput* parse, char* command_out)
-
 
 
 int main()
@@ -23,7 +18,6 @@ int main()
     }
 
     char line[100];
-    int errPos = 0;
     while (fgets(line, 100, file_ptr) != NULL)
     {
         if (line[0] != '#' && line[0] != '\n' && line[0] != '~') printf("\n> ");// else printf("\n");
@@ -33,7 +27,7 @@ int main()
             
             line[strcspn(line, "\n")] = 0;
             struct parsedInput parse = {0, 0, 0,0,0,0, 0,0,0,0, 0,0};
-            parse_input(line, &parse, R, C, &errPos);
+            parse_input(line, &parse, R, C);
 
             switch (parse.inpType)
             {

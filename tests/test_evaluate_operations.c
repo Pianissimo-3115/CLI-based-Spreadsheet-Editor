@@ -16,8 +16,9 @@ void calculate(Cell** data, Cell* cell, int C);
 int evaluate(Cell** data, Cell *cell, Cell_func* old_func, int R, int C);
 
 void free_test_cell(Cell* cell) {
-    free(cell->func);
-    free(cell->children);
+    if(cell==NULL) return;
+    if(cell->func!=NULL) free(cell->func);
+    if(cell->children!=NULL) free(cell->children);
     free(cell);
 }
 // Helper function to create a test cell
@@ -212,6 +213,7 @@ void test_evaluate() {
     assert(cell2->value == 5); // Expected standard deviation of 10 and 20
     printf("2nd op passed\n");
     // Test cyclic dependency
+    cell1= data[0];
     Cell_func* old_func = cell1->func;
     cell1->func = (Cell_func*)malloc(sizeof(Cell_func));
     cell1->func->op = ADD;
@@ -236,11 +238,11 @@ void test_evaluate() {
     printf("4th op passed\n");
     // Free allocated memory
     for (int i = 0; i < 4; i++) {
-        free(data[i]->func);
+        // if(data[i]->func!=NULL) free(data[i]->func);
         free_test_cell(data[i]);
     }
     free(data);
-    free(old_func);
+    if(old_func!=NULL) free(old_func);
 
     printf("evaluate test passed\n");
 }
