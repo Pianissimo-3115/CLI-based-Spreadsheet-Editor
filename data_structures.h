@@ -31,6 +31,9 @@ bool custom_comparator(Cell* element1, Cell* element2);
 void inorder(Node* root,ll_Node** head);
 void resetTree(AVL* avl);
 void deleteTree(Node* root);
+int height(Node* node);
+int height_diff(Node* node);
+
 
 
 

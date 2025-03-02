@@ -34,3 +34,7 @@ debug:
 	
 clean:
 	@rm -f target/release/spreadsheet target/release/spreadsheet.exe *.o
+
+test_%:
+	@$(CC) $(CFLAGS) -o test AVL.c stack.c linkedlist.c hash_table.c evaluate_operations.c IO.c ./tests/test_$*.c -lm
+	@./test
